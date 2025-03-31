@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Flask MySQL</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <form class="d-flex">
+               <input class="form-control me-2" type="search" placeholder="Rechercher un emploi" aria-label="Search" id="search">
+                <button class="btn btn-outline-success" type="button">Rechercher</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a href="/inscription" class="btn btn-primary">
+            <i class="fa fa-plus"></i> S'inscrire
+        </a>
+    </div>
+
+    <div class="container my-4">
+        <h2 class="text-center mb-4">Liste des Prestataires</h2>
+        <div class="row">
+            <!-- Boucle pour afficher les prestataires -->
+            {% for prestataire in prestataire %}
+                <div class="col-md-4 mb-4 prestataire-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top" alt="profile">
+                            <h5 class="card-title">Nom: {{ prestataire[1] }}</h5>
+                            <p class="card-text">Statut: {{ prestataire[5] }}</p>
+                            <p class="card-text emploi">Emploi: {{ prestataire[11] }}</p>
+
+                            <!-- Bouton Voir plus qui redirige vers la page de détails -->
+                            <a href="{{ url_for('prestataire_detail', id=prestataire[0]) }}" class="btn btn-info">Voir plus</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- JavaScript pour la recherche en temps réel -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let searchInput = document.getElementById("search");
+        let cards = document.querySelectorAll(".prestataire-card");
+
+        searchInput.addEventListener("input", function () {
+            let searchValue = searchInput.value.toLowerCase();
+
+            cards.forEach(function (card) {
+                let emploiElement = card.querySelector(".emploi"); // Vérifie si l'élément existe
+                if (emploiElement) {
+                    let emploiText = emploiElement.textContent.toLowerCase().replace("emploi: ", ""); // Enlève "Emploi: " pour mieux chercher
+                    if (emploiText.includes(searchValue)) {
+                        card.style.display = "block";
+                    } else {
+                        card.style.display = "none";
+                    }
+                }
+            });
+        });
+    });
+    </script>
+
+</body>
+</html>

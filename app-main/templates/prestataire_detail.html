@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Prestataire</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Détails du Prestataire</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+
+                      <img src="{{ url_for('static', filename=prestataire[10].split('static/')[-1]) }}" class="img-fluid" alt="photo du prestataire">
+
+
+
+
+                        <h5 class="card-title">Nom: {{ prestataire[1] }}</h5>
+                        <p class="card-text">Prénom: {{ prestataire[2] }}</p>
+                        <p class="card-text">Téléphone: {{ prestataire[3] }}</p>
+                        <p class="card-text">Email: {{ prestataire[4] }}</p>
+                        <p class="card-text">Statut: {{ prestataire[5] }}</p>
+                        <p class="card-text">Commune: {{ prestataire[6] }}</p>
+                        <p class="card-text">Genre: {{ prestataire[7] }}</p>
+                        <p class="card-text">Langue: {{ prestataire[8] }}</p>
+                        <p class="card-text">Emploi: {{ prestataire[11] }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <a href="/" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
