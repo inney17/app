@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>service à domicile</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- DataTables Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <link rel="stylesheet" href="static/styles.css"/>
+  <style>
+      /* Section d'en-tête avec couleur de fond attrayante */
+    .header {
+      background-color: #284f54;  /* Couleur de fond gris foncé */
+      color: white;  /* Texte en blanc */
+      text-align: center;  /* Centrer le texte */
+      padding: 50px 0;  /* Espacement autour du texte */
+    }
+
+    /* Centrer les cartes et définir une grille */
+    .card-deck {
+      display: flex;
+      justify-content: center;  /* Centrer les cartes */
+      flex-wrap: wrap;  /* Permet de faire revenir les cartes à la ligne si nécessaire */
+      margin-top: 30px;  /* Un peu d'espace après l'en-tête */
+    }
+
+    .card {
+      margin: 10px;  /* Ajouter un espacement entre les cartes */
+      width: 18rem;  /* Largeur des cartes */
+      border-radius: 15px; /* Bordure arrondie des cartes */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Légère ombre autour des cartes */
+      transition: transform 0.3s; /* Animation lors du survol */
+    }
+
+    .card img {
+      max-height: 200px; /* Limiter la hauteur de l'image */
+      object-fit: cover; /* Garder les proportions de l'image */
+      border-radius: 15px 15px 0 0; /* Bordure arrondie sur le haut de l'image */
+    }
+
+    /* Effet de survol sur les cartes */
+    .card:hover {
+      transform: translateY(-10px); /* Remonter légèrement la carte au survol */
+    }
+
+    /* Bouton Voir Plus */
+    .btn-primary {
+      background-color: #007bff; /* Couleur bleue pour le bouton */
+      border: none;
+      border-radius: 25px; /* Coins arrondis */
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 15px;
+    }
+       /* Changer la couleur du bouton au survol */
+    .btn-primary:hover {
+      background-color: #0056b3; /* Couleur bleue plus foncée */
+    }
+    /* Augmenter la taille du texte pour les paragraphes */
+    p {
+            font-size: 1.2rem; /* taille de police plus grande pour les paragraphes */
+    }
+
+
+
+  </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <form class="d-flex">
+               <input class="form-control me-2" type="search" placeholder="Rechercher un emploi" aria-label="Search" id="search">
+                <button class="btn btn-outline-success" type="button">Rechercher</button>
+            </form>
+        </div>
+    </nav>
+    <div class="header">
+       <h1>Welcome Service</h1>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bouton pour ouvrir la modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+        Se connecter
+    </button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalLabel">Se connecter</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="email" class="form-label">Email :</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Entrez votre email" required>
+            </div>
+
+            <!-- Mot de passe -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe :</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+            </div>
+
+            <!-- Message d'erreur -->
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary w-100">Connexion</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+   <!-- Section des Prestataires -->
+    <div class="container my-4" >
+
+        <div class="row">
+
+{% for prestataire in prestataire %}
+<div class="col-md-4 mb-4 prestataire-card">
+
+    <div class="card text center border-0 shadow border-radius:80%" >
+      <div class="card-body text center">
+        <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top-center" alt="profile" style="border-radius:100%; height:200px;width:220px " >
+
+            <h5 class="card-title">Nom: {{ prestataire[1] }}</h5>
+            <p class="card-text">Statut: {{ prestataire[5] }}</p>
+            <p class="card-text emploi">Emploi: {{ prestataire[11] }}</p>
+
+            <!-- Bouton qui déclenche le modal -->
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">
+                Voir plus
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour ce prestataire -->
+<div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid mb-3" alt="profile">
+        <p><strong>Nom :</strong> {{ prestataire[1] }}</p>
+        <p><strong>Prénom :</strong> {{ prestataire[2] }}</p>
+        <p><strong>Téléphone :</strong> {{ prestataire[3] }}</p>
+        <p><strong>Email :</strong> {{ prestataire[4] }}</p>
+        <p><strong>Statut :</strong> {{ prestataire[5] }}</p>
+        <p><strong>Commune :</strong> {{ prestataire[6] }}</p>
+        <p><strong>Genre :</strong> {{ prestataire[7] }}</p>
+        <p><strong>Langue :</strong> {{ prestataire[8] }}</p>
+        <p><strong>Emploi :</strong> {{ prestataire[11] }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+    <!-- JavaScript pour la recherche en temps réel -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let searchInput = document.getElementById("search");
+        let cards = document.querySelectorAll(".prestataire-card");
+
+        searchInput.addEventListener("input", function () {
+            let searchValue = searchInput.value.toLowerCase();
+
+            cards.forEach(function (card) {
+                let emploiElement = card.querySelector(".emploi"); // Vérifie si l'élément existe
+                if (emploiElement) {
+                    let emploiText = emploiElement.textContent.toLowerCase().replace("emploi: ", ""); // Enlève "Emploi: " pour mieux chercher
+                    if (emploiText.includes(searchValue)) {
+                        card.style.display = "block";
+                    } else {
+                        card.style.display = "none";
+                    }
+                }
+            });
+        });
+    });
+    </script>
+ </body>
+</html>
