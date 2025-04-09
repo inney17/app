@@ -78,54 +78,96 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-light bg-light">
-        <div class="container-fluid">
-            <form class="d-flex">
-               <input class="form-control me-2" type="search" placeholder="Rechercher un emploi" aria-label="Search" id="search">
-                <button class="btn btn-outline-success" type="button">Rechercher</button>
-            </form>
-        </div>
-    </nav>
+
     <div class="header">
        <h1>Welcome Service</h1>
-       <div class="d-flex justify-content-end mb-3">
-         <a href="/inscription" class="btn btn-primary">Inscription</a>
-       </div>
-        <div class="d-flex justify-content-end mb-3">
-         <a href="/login" class="btn btn-primary">Compte</a>
-        </div>
+
+         <!-- Bouton "Se connecter" -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adminLoginModal">
+  Se connecter
+</button>
+
+<!-- Modal de connexion -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="adminLoginModalLabel">Connexion Admin</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ url_for('admin_login') }}">
+          <div class="mb-3">
+            <label for="username" class="form-label">Nom d'utilisateur</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Mot de passe</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Se connecter</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
    <!-- Section des Prestataires -->
     <div class="container my-4" >
 
         <div class="row">
-            <!-- Boucle pour afficher les prestataires -->
-            {% for prestataire in prestataire %}
-                <div class="col-md-4 mb-4 prestataire-card">
-                    <div class="card text center border-0 shadow border-radius:80%" >
 
-                        <div class="card-body text center">
+{% for prestataire in prestataire %}
+<div class="col-md-4 mb-4 prestataire-card">
 
-                            <img src="{{ prestataire[10] }}" class="card-img-top-center" alt="profile" style="border-radius:100%; height:200px;width:220px ">
-                            <p class="card-text"><b>Nom:</b> {{ prestataire[1] }}</p>
-                            <p class="card-text"><b>Prenom:</b>{{ prestataire[2] }}</p>
-                            <p class="card-text emploi"><b>Catégorie :</b> {{ prestataire[11]}}</p>
-                            <hr>
-                            <div class="d-flex justify-content-center mb-3">
-                              <a href="{{ url_for('index2',id=prestataire[0]) }}" class="btn btn-primary">
-                               voir plus
-                              </a>
-                            </div>
+    <div class="card text center border-0 shadow border-radius:80%" >
+      <div class="card-body text center">
+        <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top-center" alt="profile" style="border-radius:100%; height:200px;width:220px " >
 
+            <h5 class="card-title">Nom: {{ prestataire[1] }}</h5>
+            <p class="card-text">Statut: {{ prestataire[5] }}</p>
+            <p class="card-text emploi">Emploi: {{ prestataire[11] }}</p>
 
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+            <!-- Bouton qui déclenche le modal -->
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">
+                Voir plus
+            </button>
         </div>
     </div>
+</div>
+
+<!-- Modal pour ce prestataire -->
+<div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid mb-3" alt="profile">
+        <p><strong>Nom :</strong> {{ prestataire[1] }}</p>
+        <p><strong>Prénom :</strong> {{ prestataire[2] }}</p>
+        <p><strong>Téléphone :</strong> {{ prestataire[3] }}</p>
+        <p><strong>Email :</strong> {{ prestataire[4] }}</p>
+        <p><strong>Statut :</strong> {{ prestataire[5] }}</p>
+        <p><strong>Commune :</strong> {{ prestataire[6] }}</p>
+        <p><strong>Genre :</strong> {{ prestataire[7] }}</p>
+        <p><strong>Langue :</strong> {{ prestataire[8] }}</p>
+        <p><strong>Emploi :</strong> {{ prestataire[11] }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 
     <!-- JavaScript pour la recherche en temps réel -->
@@ -151,9 +193,5 @@
         });
     });
     </script>
-
-
-
-
 </body>
 </html>
