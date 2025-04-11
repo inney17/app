@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Bootstrap CSS pour la mise en page -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Dashboard</h1>
+
+        <!-- Section des cartes statistiques -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Prestataires</h5>
+                        <p class="card-text">{{ total_prestataires }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Prestataires Actifs</h5>
+                        <p class="card-text">{{ active_prestataires }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Prestataires Inactifs</h5>
+                        <p class="card-text">{{ inactive_prestataires }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Catégories Distinctes</h5>
+                        <p class="card-text">{{ total_categories }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section du tableau avec les statistiques détaillées -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <h3 class="text-center">Statistiques Détailées</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Statistique</th>
+                            <th scope="col">Valeur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Prestataires</td>
+                            <td>{{ total_prestataires }}</td>
+                        </tr>
+                        <tr>
+                            <td>Prestataires Actifs</td>
+                            <td>{{ active_prestataires }}</td>
+                        </tr>
+                        <tr>
+                            <td>Prestataires Inactifs</td>
+                            <td>{{ inactive_prestataires }}</td>
+                        </tr>
+                        <tr>
+                            <td>Catégories Distinctes</td>
+                            <td>{{ total_categories }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Graphique des Prestataires Actifs vs Inactifs avec une taille réduite -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <canvas id="prestataireChart" style="max-width: 400px; max-height: 300px;"></canvas>
+            </div>
+        </div>
+
+        <script>
+            var ctx = document.getElementById('prestataireChart').getContext('2d');
+            var prestataireChart = new Chart(ctx, {
+                type: 'pie', // type du graphique (ici un graphique en secteur)
+                data: {
+                    labels: ['Actifs', 'Inactifs'],
+                    datasets: [{
+                        label: 'Prestataires',
+                        data: [{{ active_prestataires }}, {{ inactive_prestataires }}], // données dynamiques
+                        backgroundColor: ['#28a745', '#dc3545'],
+                        borderColor: ['#28a745', '#dc3545'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + ' prestataires';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+    <!-- Bootstrap JS pour le bon fonctionnement des éléments interactifs -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
