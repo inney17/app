@@ -1,197 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>service à domicile</title>
-  <!-- Bootstrap CSS -->
+  <title>Service à Domicile</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- DataTables Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-  <!-- Font Awesome CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- DataTables JS -->
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-  <link rel="stylesheet" href="static/styles.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
   <style>
-      /* Section d'en-tête avec couleur de fond attrayante */
+    body {
+      background: linear-gradient(to bottom right, #e3f2fd, #ffffff);
+      font-family: 'Poppins', sans-serif;
+    }
+    .navbar {
+      background-color: #007bff;
+    }
+    .navbar-brand, .nav-link, .navbar-toggler-icon {
+      color: white !important;
+    }
     .header {
-      background-color: #284f54;  /* Couleur de fond gris foncé */
-      color: white;  /* Texte en blanc */
-      text-align: center;  /* Centrer le texte */
-      padding: 50px 0;  /* Espacement autour du texte */
+      background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c') no-repeat center center/cover;
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+      position: relative;
     }
-
-    /* Centrer les cartes et définir une grille */
-    .card-deck {
-      display: flex;
-      justify-content: center;  /* Centrer les cartes */
-      flex-wrap: wrap;  /* Permet de faire revenir les cartes à la ligne si nécessaire */
-      margin-top: 30px;  /* Un peu d'espace après l'en-tête */
+    .header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1;
     }
-
-    .card {
-      margin: 10px;  /* Ajouter un espacement entre les cartes */
-      width: 18rem;  /* Largeur des cartes */
-      border-radius: 15px; /* Bordure arrondie des cartes */
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Légère ombre autour des cartes */
-      transition: transform 0.3s; /* Animation lors du survol */
+    .header-content {
+      position: relative;
+      z-index: 2;
     }
-
-    .card img {
-      max-height: 200px; /* Limiter la hauteur de l'image */
-      object-fit: cover; /* Garder les proportions de l'image */
-      border-radius: 15px 15px 0 0; /* Bordure arrondie sur le haut de l'image */
+    .header h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
     }
-
-    /* Effet de survol sur les cartes */
-    .card:hover {
-      transform: translateY(-10px); /* Remonter légèrement la carte au survol */
+    .header p {
+      font-size: 1.25rem;
     }
-
-    /* Bouton Voir Plus */
-    .btn-primary {
-      background-color: #007bff; /* Couleur bleue pour le bouton */
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-top: 60px;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #333;
+    }
+    .category-tile {
+      background: linear-gradient(135deg, #ffffff, #e3f2fd);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .category-tile:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #bbdefb, #ffffff);
+    }
+    .category-tile i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: #0d6efd;
+    }
+    .prestataire-card {
       border: none;
-      border-radius: 25px; /* Coins arrondis */
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 15px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease-in-out;
     }
-       /* Changer la couleur du bouton au survol */
-    .btn-primary:hover {
-      background-color: #0056b3; /* Couleur bleue plus foncée */
+    .prestataire-card:hover {
+      transform: translateY(-10px);
     }
-    /* Augmenter la taille du texte pour les paragraphes */
-    p {
-            font-size: 1.2rem; /* taille de police plus grande pour les paragraphes */
+    .prestataire-card img {
+      height: 220px;
+      object-fit: cover;
+      width: 100%;
     }
-
-
-
+    .testimonial {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .modal-body ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .modal-body ul li {
+      padding: 8px 0;
+      font-size: 1rem;
+    }
+    footer {
+      background: #212529;
+      color: white;
+      padding: 20px 0;
+    }
   </style>
 </head>
 <body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#">Service à Domicile</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="#prestataires">Prestataires</a></li>
 
-
-    <div class="header">
-       <h1>Welcome Service</h1>
-
-         <!-- Bouton "Se connecter" -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adminLoginModal">
-  Se connecter
-</button>
-
-<!-- Modal de connexion -->
-<div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="adminLoginModalLabel">Connexion Admin</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form method="POST" action="{{ url_for('admin_login') }}">
-          <div class="mb-3">
-            <label for="username" class="form-label">Nom d'utilisateur</label>
-            <input type="text" class="form-control" id="username" name="username" required>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Mot de passe</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Se connecter</button>
-        </form>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
       </div>
     </div>
-  </div>
-</div>
+  </nav>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <header class="header">
+    <div class="header-content">
+      <h1 data-aos="fade-down">Bienvenue sur Service à Domicile</h1>
+      <p data-aos="fade-up">Des experts à votre service pour chaque besoin quotidien.</p>
+      <button class="btn btn-outline-light mt-3" data-bs-toggle="modal" data-bs-target="#adminLoginModal" data-aos="zoom-in">Se connecter</button>
     </div>
+  </header>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-   <!-- Section des Prestataires -->
-    <div class="container my-4" >
-
-        <div class="row">
-
-{% for prestataire in prestataire %}
-<div class="col-md-4 mb-4 prestataire-card">
-
-    <div class="card text center border-0 shadow border-radius:80%" >
-      <div class="card-body text center">
-        <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top-center" alt="profile" style="border-radius:100%; height:200px;width:220px " >
-
-            <h5 class="card-title">Nom: {{ prestataire[1] }}</h5>
-            <p class="card-text">Statut: {{ prestataire[5] }}</p>
-            <p class="card-text emploi">Emploi: {{ prestataire[11] }}</p>
-
-            <!-- Bouton qui déclenche le modal -->
-            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">
-                Voir plus
-            </button>
+   <!-- Modal Connexion -->
+  <div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="adminLoginModalLabel">Connexion Admin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
-    </div>
-</div>
-
-<!-- Modal pour ce prestataire -->
-<div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-      </div>
-      <div class="modal-body">
-        <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid mb-3" alt="profile">
-        <p><strong>Nom :</strong> {{ prestataire[1] }}</p>
-        <p><strong>Prénom :</strong> {{ prestataire[2] }}</p>
-        <p><strong>Téléphone :</strong> {{ prestataire[3] }}</p>
-        <p><strong>Email :</strong> {{ prestataire[4] }}</p>
-        <p><strong>Statut :</strong> {{ prestataire[5] }}</p>
-        <p><strong>Commune :</strong> {{ prestataire[6] }}</p>
-        <p><strong>Genre :</strong> {{ prestataire[7] }}</p>
-        <p><strong>Langue :</strong> {{ prestataire[8] }}</p>
-        <p><strong>Emploi :</strong> {{ prestataire[11] }}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <div class="modal-body">
+          <form method="POST" action="{{ url_for('admin_login') }}">
+            <div class="mb-3">
+              <label for="username" class="form-label">Nom d'utilisateur</label>
+              <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Mot de passe</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-{% endfor %}
 
 
-    <!-- JavaScript pour la recherche en temps réel -->
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let searchInput = document.getElementById("search");
-        let cards = document.querySelectorAll(".prestataire-card");
 
-        searchInput.addEventListener("input", function () {
-            let searchValue = searchInput.value.toLowerCase();
+  <section id="services" class="container">
+    <h2 class="section-title" data-aos="fade-right">Nos Services</h2>
+    <div class="row text-center">
+      <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="category-tile">
+          <i class="fas fa-broom"></i>
+          <h5>Ménage</h5>
+          <p>Professionnels du nettoyage pour un espace propre et sain.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="category-tile">
+          <i class="fas fa-baby"></i>
+          <h5>Garde d'enfants</h5>
+          <p>Des prestataires formés pour prendre soin de vos enfants.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="category-tile">
+          <i class="fas fa-tools"></i>
+          <h5>Bricolage</h5>
+          <p>Interventions rapides et efficaces pour vos petits travaux.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            cards.forEach(function (card) {
-                let emploiElement = card.querySelector(".emploi"); // Vérifie si l'élément existe
-                if (emploiElement) {
-                    let emploiText = emploiElement.textContent.toLowerCase().replace("emploi: ", ""); // Enlève "Emploi: " pour mieux chercher
-                    if (emploiText.includes(searchValue)) {
-                        card.style.display = "block";
-                    } else {
-                        card.style.display = "none";
-                    }
-                }
-            });
-        });
-    });
-    </script>
+  <section id="prestataires" class="container">
+    <h2 class="section-title" data-aos="fade-left">Nos Prestataires</h2>
+    <div class="row">
+      {% for prestataire in prestataire %}
+      <div class="col-md-4 mb-4" data-aos="fade-up">
+        <div class="card prestataire-card">
+          <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top" alt="profile">
+          <div class="card-body">
+            <h5 class="card-title">{{ prestataire[1] }} {{ prestataire[2] }}</h5>
+            <p class="card-text text-muted">Statut : {{ prestataire[5] }}</p>
+            <p class="card-text emploi">Catégorie : {{ prestataire[11] }}</p>
+            <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">Voir plus</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="">
+              <ul>
+                <li><strong>Nom :</strong> {{ prestataire[1] }}</li>
+                <li><strong>Prénom :</strong> {{ prestataire[2] }}</li>
+                <li><strong>Téléphone :</strong> {{ prestataire[3] }}</li>
+                <li><strong>Email :</strong> {{ prestataire[4] }}</li>
+                <li><strong>Commune :</strong> {{ prestataire[6] }}</li>
+                <li><strong>Genre :</strong> {{ prestataire[7] }}</li>
+                <li><strong>Langue :</strong> {{ prestataire[8] }}</li>
+                <li><strong>Catégorie :</strong> {{ prestataire[11] }}</li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+
+
+  <section id="contact" class="container my-5">
+    <h2 class="section-title" data-aos="fade-up">Contact</h2>
+    <form data-aos="zoom-in">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nom</label>
+        <input type="text" class="form-control" id="name" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea class="form-control" id="message" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <a href="{{ url_for('statistics') }}" > Envoyer </a>
+        </button>
+    </form>
+  </section>
+
+  <footer class="text-center">
+    <p class="mb-0">&copy; 2025 Service à Domicile. Tous droits réservés.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
 </body>
 </html>

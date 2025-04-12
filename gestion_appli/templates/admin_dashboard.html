@@ -3,177 +3,264 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard Admin</title>
+  <title>Admin Dashboard - CRUD Flask MySQL</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- DataTables CSS -->
+
+  <!-- DataTables Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom Styles -->
   <style>
     body {
-      background-color: #f8f9fa;
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
     }
     .sidebar {
-      height: 100vh;
-      background-color: #284f54;
-      color: white;
+      min-height: 100vh;
+      background: linear-gradient(45deg, #1f2d3d, #3c4b64);
+      color: #fff;
       padding-top: 30px;
-      position: fixed;
-      width: 250px;
-      transition: transform 0.3s ease;
+      position: sticky;
+      top: 0;
+    }
+    .sidebar h4 {
+      margin-bottom: 30px;
+      font-weight: bold;
     }
     .sidebar a {
-      color: white;
+      color: #cfd8dc;
       text-decoration: none;
+      padding: 12px 20px;
       display: block;
-      padding: 15px;
-      margin: 10px 0;
       border-radius: 8px;
-      transition: background 0.3s;
+      margin-bottom: 10px;
+      transition: background-color 0.3s, color 0.3s;
     }
-    .sidebar a:hover, .sidebar a.active {
-      background-color: #1b383d;
+    .sidebar a:hover {
+      background-color: #5c6bc0;
+      color: #fff;
     }
-    .main-content {
-      margin-left: 250px;
-      padding: 30px;
-      transition: margin-left 0.3s ease;
-    }
-    .card {
+    .stat-card {
       border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-    .table thead {
-      background-color: #284f54;
-      color: white;
-    }
-    .btn-custom {
-      background-color: #007bff;
-      color: white;
-      border-radius: 25px;
-      padding: 8px 20px;
-    }
-    .btn-custom:hover {
-      background-color: #0056b3;
-    }
-    /* Responsive Sidebar */
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      .main-content {
-        margin-left: 0;
-      }
-    }
-    .menu-toggle {
-      display: none;
-      font-size: 24px;
-      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: all 0.3s;
       cursor: pointer;
     }
-    @media (max-width: 768px) {
-      .menu-toggle {
-        display: block;
-      }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    .stat-card.active {
+      border: 3px solid #5c6bc0;
+    }
+    table img {
+      max-width: 80px;
+      height: auto;
+      border-radius: 8px;
+    }
+    .btn-primary, .btn-success, .btn-danger, .btn-warning {
+      border-radius: 10px;
+    }
+    .modal-content {
+      border-radius: 10px;
+    }
+    .table {
+      border-radius: 10px;
+      overflow: hidden;
     }
   </style>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 </head>
 
 <body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
 
-<!-- Sidebar -->
-<div class="sidebar d-flex flex-column" id="sidebar">
-  <h2 class="text-center mb-4">Admin</h2>
-  <a href="#" class="active"><i class="fas fa-users"></i> Gérer les comptes</a>
-  <a href="#"><i class="fas fa-credit-card"></i> Paiements</a>
-  <a href="#"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-</div>
+ <nav class="col-md-2 sidebar d-flex flex-column align-items-start">
+  <h4>Admin</h4>
+  <a href="/admin_dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+  <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
+  <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
+  <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
+  <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
+  <div class="logout-btn">
+          <a href="{{ url_for('admin_logout') }}" class="btn btn-danger w-75">
+            <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </a>
+        </div>
+ </nav>
 
-<!-- Main Content -->
-<div class="main-content">
-  <div class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></div>
 
-  <h1 class="mb-4">Tableau de bord</h1>
+      <!-- Main Content -->
+      <main class="col-md-10 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Tableau de bord Administrateur</h2>
+        </div>
 
-  <!-- Gestion des comptes -->
-  <div class="card p-4">
-    <h4 class="mb-3">Liste des comptes</h4>
-    <table id="accountsTable" class="table table-striped">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Email</th>
-          <th>Statut</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Exemple de ligne -->
-        <tr>
-          <td>Jean Dupont</td>
-          <td>jean.dupont@email.com</td>
-          <td><span class="badge bg-success">Actif</span></td>
-          <td>
-            <button class="btn btn-sm btn-warning toggle-status"><i class="fas fa-user-slash"></i> Désactiver</button>
-            <button class="btn btn-sm btn-danger delete-account"><i class="fas fa-trash"></i> Supprimer</button>
-          </td>
-        </tr>
-        <!-- D'autres lignes peuvent être générées dynamiquement ici -->
-      </tbody>
-    </table>
+        <!-- Statistiques avec boutons de filtrage -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="bg-primary text-white p-4 stat-card" id="filter-all">
+              <h5><i class="fas fa-users fa-2x mb-2"></i><br>Tous les Prestataires</h5>
+              <h3>{{ total }}</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="bg-success text-white p-4 stat-card" id="filter-active">
+              <h5><i class="fas fa-user-check fa-2x mb-2"></i><br>Prestataires Actifs</h5>
+              <h3>{{ actifs }}</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="bg-danger text-white p-4 stat-card" id="filter-inactive">
+              <h5><i class="fas fa-user-times fa-2x mb-2"></i><br>Prestataires Inactifs</h5>
+              <h3>{{ inactifs }}</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Liste des prestataires -->
+        <div class="card shadow rounded-4 p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Liste des prestataires</h3>
+            <a href="/inscription" class="btn btn-primary">
+              <i class="fa fa-plus"></i> Ajouter un prestataire
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table id="prestataireTable" class="table table-hover table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Statut</th>
+                  <th>Téléphone</th>
+                  <th>Commune</th>
+                  <th>Genre</th>
+                  <th>Langue</th>
+                  <th>Catégorie</th>
+                  <th>Profil</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for prestataire in prestataire %}
+                <tr data-status="{{ prestataire[5] }}">
+                  <td>{{ prestataire[0] }}</td>
+                  <td>{{ prestataire[1] }}</td>
+                  <td>{{ prestataire[4] }}</td>
+                  <td>
+                    <span class="badge {% if prestataire[5] == 'active' %}bg-success{% else %}bg-danger{% endif %}">
+                      {{ prestataire[5] }}
+                    </span>
+                  </td>
+                  <td>{{ prestataire[3] }}</td>
+                  <td>{{ prestataire[6] }}</td>
+                  <td>{{ prestataire[7] }}</td>
+                  <td>{{ prestataire[8] }}</td>
+                  <td>{{ prestataire[11] }}</td>
+                  <td>
+                    <img src="{{ url_for('static', filename=prestataire[10].replace('static/', '')) }}" alt="Profil">
+                  </td>
+                  <td class="text-center">
+                    <a href="/update/{{ prestataire[0] }}" class="btn btn-warning btn-sm me-1" title="Modifier">
+                      <i class="fa fa-edit"></i>
+                    </a>
+                    <button type="button" class="btn btn-danger btn-sm delete-btn" data-url="/delete/{{ prestataire[0] }}" title="Supprimer">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
-</div>
 
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Modal Suppression -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Confirmation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          Êtes-vous sûr de vouloir supprimer ce prestataire ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <form id="deleteForm" method="post" action="">
+            <button type="submit" class="btn btn-danger">Confirmer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- ... (tout le reste de votre code HTML reste inchangé) ... -->
 
 <script>
-  $(document).ready(function () {
-    $('#accountsTable').DataTable(); // Activation du DataTable
-
-    // Menu toggle pour mobile
-    $('#menu-toggle').click(function() {
-      $('#sidebar').toggleClass('active');
-    });
-
-    // Changement de statut Actif/Inactif
-    $(document).on('click', '.toggle-status', function() {
-      let badge = $(this).closest('tr').find('td:nth-child(3) span');
-      if (badge.hasClass('bg-success')) {
-        badge.removeClass('bg-success').addClass('bg-secondary').text('Inactif');
-        $(this).html('<i class="fas fa-user-check"></i> Activer');
-      } else {
-        badge.removeClass('bg-secondary').addClass('bg-success').text('Actif');
-        $(this).html('<i class="fas fa-user-slash"></i> Désactiver');
-      }
-    });
-
-    // Suppression avec confirmation
-    $(document).on('click', '.delete-account', function() {
-      if (confirm("Êtes-vous sûr de vouloir supprimer ce compte ?")) {
-        $(this).closest('tr').fadeOut(500, function() {
-          $(this).remove();
-        });
-      }
-    });
+$(document).ready(function() {
+  // Initialisation simple de DataTable
+  var table = $('#prestataireTable').DataTable({
+    language: {
+      url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+    },
+    responsive: true
   });
-</script>
 
+  // Gestion du bouton de suppression (inchangé)
+  $('.delete-btn').click(function() {
+    var deleteUrl = $(this).data('url');
+    $('#deleteForm').attr('action', deleteUrl);
+    $('#deleteModal').modal('show');
+  });
+
+  // Filtrage SIMPLIFIÉ et FONCTIONNEL
+  $('.stat-card').click(function() {
+    $('.stat-card').removeClass('active');
+    $(this).addClass('active');
+
+    var filterType = $(this).attr('id').replace('filter-', '');
+
+    if (filterType === 'all') {
+      table.search('').columns().search('').draw();
+    } else {
+      // On filtre directement sur l'attribut data-status des lignes
+      $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+          var rowStatus = table.row(dataIndex).node().getAttribute('data-status');
+          return rowStatus === filterType;
+        }
+      );
+      table.draw();
+      $.fn.dataTable.ext.search.pop(); // On nettoie le filtre après l'application
+    }
+  });
+
+  $('#filter-all').addClass('active');
+});
+</script>
 </body>
 </html>
-
-
-
-
-
