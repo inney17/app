@@ -53,6 +53,14 @@
     .main-content {
       padding: 20px;
     }
+        /* Animation des icônes */
+    .sidebar a:hover i {
+      animation: bounce 0.5s;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
+    }
   </style>
 </head>
 
@@ -60,22 +68,19 @@
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
-      <nav class="col-md-2 sidebar">
-        <h4 class="px-3">Admin</h4>
-        <a href="/admin_dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-        <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
-        <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
-        <a href="{{ url_for('paiement') }} "
-           class="{% if request.path == url_for('paiement') %}active{% endif %}">
-           <i class="fas fa-credit-card me-2"></i> Paiement
-        </a>
-        <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
-        <div class="logout-btn">
-          <a href="{{ url_for('admin_logout') }}" class="btn btn-danger w-75">
+
+ <nav class="col-md-2 sidebar d-flex flex-column align-items-start">
+  <h4>Admin</h4>
+  <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
+  <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
+  <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
+  <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
+  <div class="logout-btn">
+          <a href="{{ url_for('admin_logout') }}">
             <i class="fas fa-sign-out-alt"></i> Déconnexion
           </a>
         </div>
-      </nav>
+ </nav>
 
       <!-- Main Content -->
       <main class="col-md-10 main-content">
@@ -99,7 +104,7 @@
                   </select>
                 </div>
                 <div class="col-md-6">
-                  <label for="montant" class="form-label">Montant (€)</label>
+                  <label for="montant" class="form-label">Montant (MRO)</label>
                   <input type="number" class="form-control" id="montant" name="montant" min="1" required>
                 </div>
                 <div class="col-12">
@@ -136,7 +141,7 @@
                     <td>{{ p[0] }}</td>
                     <td>{{ p[1] }} {{ p[2] }}</td>
                     <td>{{ p[3] }}</td>
-                    <td>{{ p[4] }} €</td>
+                    <td>{{ p[4] }} MRO</td>
                     <td>{{ p[5] }}</td>
                     <td>
                       <span class="badge {% if p[6] == 'active' %}badge-active{% else %}badge-expired{% endif %}">

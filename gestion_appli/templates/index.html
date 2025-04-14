@@ -191,48 +191,52 @@
     <h2 class="section-title" data-aos="fade-left">Nos Prestataires</h2>
     <div class="row">
       {% for prestataire in prestataire %}
-      <div class="col-md-4 mb-4" data-aos="fade-up">
-        <div class="card prestataire-card">
-          <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top" alt="profile">
-          <div class="card-body">
-            <h5 class="card-title">{{ prestataire[1] }} {{ prestataire[2] }}</h5>
-            <p class="card-text text-muted">Statut : {{ prestataire[5] }}</p>
-            <p class="card-text emploi">Catégorie : {{ prestataire[11] }}</p>
-            <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">Voir plus</button>
+        {% if prestataire[5] == 'active' %}
+          <div class="col-md-4 mb-4" data-aos="fade-up">
+            <div class="card prestataire-card">
+              <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top" alt="profile">
+              <div class="card-body">
+                <h5 class="card-title">{{ prestataire[1] }} {{ prestataire[2] }}</h5>
+                <p class="card-text text-muted">Statut : {{ prestataire[5] }}</p>
+                <p class="card-text emploi">Catégorie : {{ prestataire[11] }}</p>
+                <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">
+                  Voir plus
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-              <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="">
-              <ul>
-                <li><strong>Nom :</strong> {{ prestataire[1] }}</li>
-                <li><strong>Prénom :</strong> {{ prestataire[2] }}</li>
-                <li><strong>Téléphone :</strong> {{ prestataire[3] }}</li>
-                <li><strong>Email :</strong> {{ prestataire[4] }}</li>
-                <li><strong>Commune :</strong> {{ prestataire[6] }}</li>
-                <li><strong>Genre :</strong> {{ prestataire[7] }}</li>
-                <li><strong>Langue :</strong> {{ prestataire[8] }}</li>
-                <li><strong>Catégorie :</strong> {{ prestataire[11] }}</li>
-              </ul>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <!-- Modal détails -->
+          <div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                  <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="">
+                  <ul>
+                    <li><strong>Nom :</strong> {{ prestataire[1] }}</li>
+                    <li><strong>Prénom :</strong> {{ prestataire[2] }}</li>
+                    <li><strong>Téléphone :</strong> {{ prestataire[3] }}</li>
+                    <li><strong>Email :</strong> {{ prestataire[4] }}</li>
+                    <li><strong>Commune :</strong> {{ prestataire[6] }}</li>
+                    <li><strong>Genre :</strong> {{ prestataire[7] }}</li>
+                    <li><strong>Langue :</strong> {{ prestataire[8] }}</li>
+                    <li><strong>Catégorie :</strong> {{ prestataire[11] }}</li>
+                  </ul>
+                </div>
+                 <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                 </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        {% endif %}
       {% endfor %}
     </div>
   </section>
-
 
 
   <section id="contact" class="container my-5">

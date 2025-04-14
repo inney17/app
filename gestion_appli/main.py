@@ -190,7 +190,7 @@ def paiement():
         prestataire_id = request.form['prestataire_id']
         montant = request.form['montant']
         date_paiement = datetime.now().strftime('%Y-%m-%d')
-        date_expiration = (datetime.now().replace(year=datetime.now().year + 1)).strftime('%Y-%m-%d')
+        date_expiration = (datetime.now().replace(month=datetime.now().month + 1)).strftime('%Y-%m-%d')
 
         cursor.execute("""
             INSERT INTO paiement (prestataire_id, montant, date_paiement, date_expiration) 

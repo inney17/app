@@ -48,13 +48,7 @@
       width: 20px;
       text-align: center;
     }
-    .logout-btn {
-      margin-top: auto;
-      padding: 20px;
-      text-align: center;
-    }
-    .logout-btn a {
-      justify-content: center;
+
     }
     /* Styles des cartes */
     .stat-card {
@@ -73,7 +67,7 @@
     .card h5 {
       font-weight: bold;
     }
-    /* Animation des icônes */
+      /* Animation des icônes */
     .sidebar a:hover i {
       animation: bounce 0.5s;
     }
@@ -83,24 +77,30 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container-fluid">
     <div class="row">
-      <!-- Sidebar identique à admin dashboard -->
-      <nav class="col-md-2 sidebar d-flex flex-column">
-        <h4>Admin</h4>
-        <a href="/admin_dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="/"><i class="fas fa-home"></i> Accueil</a>
-        <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase"></i> Prestataires</a>
-        <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>
-        <a href="{{ url_for('statistics') }}" class="active"><i class="fas fa-chart-line"></i> Statistiques</a>
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
 
-        <div class="logout-btn">
-          <a href="{{ url_for('admin_logout') }}" class="btn btn-danger w-75">
+ <!-- Sidebar -->
+
+ <nav class="col-md-2 sidebar d-flex flex-column align-items-start">
+  <h4>Admin</h4>
+  <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
+  <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
+  <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
+  <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
+  <div class="logout-btn">
+          <a href="{{ url_for('admin_logout') }}">
             <i class="fas fa-sign-out-alt"></i> Déconnexion
           </a>
         </div>
-      </nav>
+ </nav>
 
       <!-- Contenu principal -->
       <main class="col-md-10 p-4">

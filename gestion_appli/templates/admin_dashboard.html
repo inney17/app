@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Dashboard - CRUD Flask MySQL</title>
 
@@ -73,6 +73,14 @@
       border-radius: 10px;
       overflow: hidden;
     }
+    /* Animation des icônes */
+    .sidebar a:hover i {
+      animation: bounce 0.5s;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
+    }
   </style>
 
   <!-- jQuery -->
@@ -94,13 +102,12 @@
 
  <nav class="col-md-2 sidebar d-flex flex-column align-items-start">
   <h4>Admin</h4>
-  <a href="/admin_dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
   <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
   <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
   <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
   <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
   <div class="logout-btn">
-          <a href="{{ url_for('admin_logout') }}" class="btn btn-danger w-75">
+          <a href="{{ url_for('admin_logout') }}">
             <i class="fas fa-sign-out-alt"></i> Déconnexion
           </a>
         </div>
