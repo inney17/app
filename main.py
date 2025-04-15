@@ -3,18 +3,8 @@ import os
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
-db = SQLAlchemy()
 
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), nullable=False)
-    contenu = db.Column(db.Text, nullable=False)
-    date_reception = db.Column(db.DateTime, default=datetime.utcnow)
-    lu = db.Column(db.Boolean, default=False)  # Pour savoir si le message a été lu
 
 app = Flask(__name__)
 
@@ -144,11 +134,12 @@ def update(id):
         # Si la méthode est GET, on affiche le formulaire avec les informations actuelles de l'utilisateur
     return render_template('update.html', prestataire=prestataire)
 
+
 @app.route('/statistics')
 def statistics():
     cur = mysql.connection.cursor()
 
-    # Récupérer des statistiques supplémentaires ou spécifiques
+    # Récupérer des statistiques de base
     cur.execute("SELECT COUNT(*) FROM prestataire")
     total_prestataire = cur.fetchone()[0]
 
@@ -158,19 +149,38 @@ def statistics():
     cur.execute("SELECT COUNT(*) FROM prestataire WHERE statut = 'inactive'")
     inactive_prestataire = cur.fetchone()[0]
 
-    # Si tu veux ajouter d'autres statistiques ou graphiques
     cur.execute("SELECT COUNT(DISTINCT catégorie) FROM prestataire")
     total_catégorie = cur.fetchone()[0]
 
+    # Récupérer le total des paiements des prestataires actifs
+    cur.execute("""
+        SELECT SUM(montant) FROM paiement
+        JOIN prestataire ON paiement.prestataire_id = prestataire.id
+        WHERE prestataire.statut = 'active'
+    """)
+    total_paiement_actif = cur.fetchone()[0] or 0
+
+    # Récupérer les données pour la courbe des paiements (30 derniers jours)
+    cur.execute("""
+        SELECT 
+            DATE(date_paiement) AS date,
+            SUM(montant) AS total
+        FROM paiement
+        WHERE date_paiement >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        GROUP BY date
+        ORDER BY date
+    """)
+    paiements_data = cur.fetchall()
 
     cur.close()
 
-    # Retourner un template où on affiche ces stats
     return render_template('statistics.html',
-                           total_prestataire=total_prestataire,
-                           active_prestataire=active_prestataire,
-                           inactive_prestataire=inactive_prestataire,
-                           total_catégorie=total_catégorie)
+                         total_prestataire=total_prestataire,
+                         active_prestataire=active_prestataire,
+                         inactive_prestataire=inactive_prestataire,
+                         total_catégorie=total_catégorie,
+                         total_paiement_actif=total_paiement_actif
+                        )
 
 from datetime import datetime
 
@@ -255,13 +265,26 @@ def admin_logout():
 
 @app.route('/paiement', methods=['GET', 'POST'])
 def paiement():
-    conn = mysql.connection  # 🛠️ on va chercher la connexion
-    cursor = conn.cursor()   # puis on ouvre le curseur
+    conn = mysql.connection
+    cursor = conn.cursor()
 
-    # Après tu fais tes requêtes normalement...
+    # 🔁 Mise à jour automatique des statuts expirés
+    cursor.execute("""
+        UPDATE prestataire
+        SET statut = 'inactive'
+        WHERE id IN (
+            SELECT p.prestataire_id
+            FROM paiement p
+            WHERE p.date_expiration < NOW()
+        )
+    """)
+    conn.commit()
+
+    # 🔎 Prestataires à payer
     cursor.execute("SELECT * FROM prestataire WHERE statut = 'inactive'")
     prestataires = cursor.fetchall()
 
+    # 💳 Paiement reçu
     if request.method == 'POST':
         prestataire_id = request.form['prestataire_id']
         montant = request.form['montant']
@@ -269,12 +292,12 @@ def paiement():
         date_expiration = (datetime.now().replace(month=datetime.now().month + 1)).strftime('%Y-%m-%d')
 
         cursor.execute("""
-            INSERT INTO paiement (prestataire_id, montant, date_paiement, date_expiration) 
+            INSERT INTO paiement (prestataire_id, montant, date_paiement, date_expiration)
             VALUES (%s, %s, %s, %s)
         """, (prestataire_id, montant, date_paiement, date_expiration))
 
         cursor.execute("""
-            UPDATE prestataire 
+            UPDATE prestataire
             SET statut = 'active'
             WHERE id = %s
         """, (prestataire_id,))
@@ -282,23 +305,21 @@ def paiement():
         conn.commit()
         return redirect(url_for('paiement'))
 
+    # 🧾 Historique des paiements
     cursor.execute("""
-        SELECT paiement.id, prestataire.Nom, prestataire.Prenom, paiement.date_paiement, 
-        paiement.montant, paiement.date_expiration, 
-        CASE 
-            WHEN paiement.date_expiration < NOW() THEN 'Expiré' 
-            ELSE 'active' 
-        END AS statut
-        FROM paiement 
+        SELECT paiement.id, prestataire.Nom, prestataire.Prenom, paiement.date_paiement,
+               paiement.montant, paiement.date_expiration,
+               CASE 
+                   WHEN paiement.date_expiration < NOW() THEN 'inactive' 
+                   ELSE 'active'
+               END AS statut
+        FROM paiement
         JOIN prestataire ON paiement.prestataire_id = prestataire.ID
     """)
     paiements = cursor.fetchall()
 
     cursor.close()
-
     return render_template('paiement.html', prestataires=prestataires, paiements=paiements)
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
