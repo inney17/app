@@ -3,6 +3,18 @@ import os
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
+db = SQLAlchemy()
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    contenu = db.Column(db.Text, nullable=False)
+    date_reception = db.Column(db.DateTime, default=datetime.utcnow)
+    lu = db.Column(db.Boolean, default=False)  # Pour savoir si le message a été lu
 
 app = Flask(__name__)
 
@@ -37,43 +49,6 @@ def index():
 
 
 # Route : Connexion admin
-@app.route('/admin/login', methods=['POST'])
-def admin_login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        # Vérification des identifiants (admin et mot de passe statiques)
-        if username == 'admin' and password == 'admin123':
-            session['admin'] = True  # Créer une session pour l'admin
-
-
-            return redirect(url_for('admin_dashboard'))
-        else:
-            return "Identifiants incorrects, veuillez réessayer", 400
-
-
-
-# Route : Tableau de bord admin
-@app.route('/admin/dashboard')
-def admin_dashboard():
-
-    if 'admin' not in session:
-        return redirect(url_for('index'))  # Si l'admin n'est pas connecté, rediriger vers la page d'accueil
-
-    # Récupérer les prestataires depuis la base de données
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM prestataire")  # Récupérer tous les prestataires
-    prestataire = cur.fetchall()
-    cur.close()
-
-    return render_template('admin_dashboard.html', prestataire=prestataire)
-
-# Route : Déconnexion de l'admin
-@app.route('/admin/logout')
-def admin_logout():
-    session.pop('admin', None)  # Supprimer la session de l'admin
-    return redirect(url_for('index'))
 
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
@@ -90,7 +65,7 @@ def inscription():
         genre = request.form.get('genre')
         langue = request.form.get('langue')
         catégorie = request.form.get('catégorie')
-        password = request.form.get('password')
+
         file = request.files['image']
 
         image_path = None
@@ -101,9 +76,9 @@ def inscription():
 
         cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO prestataire (nom, prenom, téléphone,image_path, email, statut, commune,genre,langue, catégorie,password) 
-            VALUES (%s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s)
-        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, catégorie,password))
+            INSERT INTO prestataire (nom, prenom, téléphone,image_path, email, statut, commune,genre,langue, catégorie) 
+            VALUES (%s, %s, %s, %s,%s, %s, %s, %s, %s, %s)
+        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, catégorie))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('index'))
@@ -196,6 +171,132 @@ def statistics():
                            active_prestataire=active_prestataire,
                            inactive_prestataire=inactive_prestataire,
                            total_catégorie=total_catégorie)
+
+from datetime import datetime
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    message = request.form.get('message')
+
+    if not name or not email or not message:
+        return redirect(url_for('index'))
+
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO messages (name, email, message, date) VALUES (%s, %s, %s, %s)",
+                (name, email, message, datetime.now()))
+    mysql.connection.commit()
+    cur.close()
+
+    return redirect(url_for('index'))
+
+
+
+
+
+# Route : Tableau de bord admin
+@app.route('/admin/login', methods=['POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if username == 'admin' and password == 'admin123':
+            session['admin'] = True
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return "Identifiants incorrects, veuillez réessayer", 400
+
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+
+    if 'admin' not in session:
+        return redirect(url_for('index'))
+
+    cur = mysql.connection.cursor()
+
+    # Récupérer les prestataires
+    cur.execute("SELECT * FROM prestataire")
+    prestataire = cur.fetchall()
+
+
+
+
+    return render_template(
+        'admin_dashboard.html',
+        prestataire=prestataire
+
+
+
+    )
+
+@app.route('/messages')
+def messages():
+    if 'admin' not in session:
+        return redirect(url_for('index'))
+
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE messages SET lu = TRUE WHERE lu = FALSE")
+    mysql.connection.commit()
+
+    cur.execute("SELECT * FROM messages ")
+    messages = cur.fetchall()
+    cur.close()
+
+    return render_template('messages.html', messages=messages)
+
+# Route : Déconnexion de l'admin
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin', None)  # Supprimer la session de l'admin
+    return redirect(url_for('login'))
+
+@app.route('/paiement', methods=['GET', 'POST'])
+def paiement():
+    conn = mysql.connection  # 🛠️ on va chercher la connexion
+    cursor = conn.cursor()   # puis on ouvre le curseur
+
+    # Après tu fais tes requêtes normalement...
+    cursor.execute("SELECT * FROM prestataire WHERE statut = 'inactive'")
+    prestataires = cursor.fetchall()
+
+    if request.method == 'POST':
+        prestataire_id = request.form['prestataire_id']
+        montant = request.form['montant']
+        date_paiement = datetime.now().strftime('%Y-%m-%d')
+        date_expiration = (datetime.now().replace(month=datetime.now().month + 1)).strftime('%Y-%m-%d')
+
+        cursor.execute("""
+            INSERT INTO paiement (prestataire_id, montant, date_paiement, date_expiration) 
+            VALUES (%s, %s, %s, %s)
+        """, (prestataire_id, montant, date_paiement, date_expiration))
+
+        cursor.execute("""
+            UPDATE prestataire 
+            SET statut = 'active'
+            WHERE id = %s
+        """, (prestataire_id,))
+
+        conn.commit()
+        return redirect(url_for('paiement'))
+
+    cursor.execute("""
+        SELECT paiement.id, prestataire.Nom, prestataire.Prenom, paiement.date_paiement, 
+        paiement.montant, paiement.date_expiration, 
+        CASE 
+            WHEN paiement.date_expiration < NOW() THEN 'Expiré' 
+            ELSE 'active' 
+        END AS statut
+        FROM paiement 
+        JOIN prestataire ON paiement.prestataire_id = prestataire.ID
+    """)
+    paiements = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template('paiement.html', prestataires=prestataires, paiements=paiements)
 
 
 

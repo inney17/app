@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background: linear-gradient(to bottom right, #e3f2fd, #ffffff);
@@ -105,15 +106,71 @@
       color: white;
       padding: 20px 0;
     }
+    .contact-info {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .contact-info p {
+      margin: 5px 0;
+    }
+
+    .contact-info strong {
+      color: #333;
+    }
+    .search-bar {
+    border-radius: 25px; /* Bordures arrondies */
+    padding: 12px 20px; /* Espacement interne */
+    font-size: 1rem; /* Taille du texte */
+    background-color: #f8f9fa; /* Couleur de fond claire */
+    border: 2px solid #007bff; /* Bordure bleue */
+    transition: all 0.3s ease; /* Transition fluide */
+  }
+
+  .search-bar:focus {
+    border-color: #0d6efd; /* Bordure bleue lors du focus */
+    box-shadow: 0 0 5px rgba(13, 110, 253, 0.5); /* Effet d'ombre sur focus */
+    outline: none; /* Retirer l'outline par défaut */
+  }
+
+  .search-bar::placeholder {
+    color: #6c757d; /* Couleur grise pour le texte du placeholder */
+    font-style: italic; /* Italique pour le placeholder */
+  }
+
+  .search-bar:hover {
+    border-color: #0056b3; /* Changer la couleur de la bordure au survol */
+  }
+    .rounded-image {
+    border-radius: 15px; /* Bordures arrondies pour l'image */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ombre douce pour l'image */
+    transition: all 0.3s ease; /* Transition fluide lors de l'effet hover */
+    object-fit: cover; /* Assurer que l'image couvre tout l'espace sans déformer */
+  }
+
+  .rounded-image:hover {
+    transform: scale(1.05); /* Effet de zoom léger au survol */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Ombre plus marquée au survol */
+  }
+
+
   </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg">
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="Recherche...">
+    </div>
     <div class="container">
       <a class="navbar-brand" href="#">Service à Domicile</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
+
+
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
@@ -138,7 +195,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="adminLoginModalLabel">Connexion Admin</h5>
+          <h5 class="modal-title" id="adminLoginModalLabel">Connexion </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
@@ -161,7 +218,7 @@
 
 
   <section id="services" class="container">
-    <h2 class="section-title" data-aos="fade-right">Nos Services</h2>
+    <h2 class="section-title" data-aos="fade-right"> Services</h2>
     <div class="row text-center">
       <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
         <div class="category-tile">
@@ -188,77 +245,84 @@
   </section>
 
   <section id="prestataires" class="container">
-    <h2 class="section-title" data-aos="fade-left">Nos Prestataires</h2>
+    <h2 class="section-title" data-aos="fade-left"> Prestataires de service</h2>
+
+
     <div class="row">
       {% for prestataire in prestataire %}
-        {% if prestataire[5] == 'active' %}
-          <div class="col-md-4 mb-4" data-aos="fade-up">
-            <div class="card prestataire-card">
-              <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="card-img-top" alt="profile">
-              <div class="card-body">
-                <h5 class="card-title">{{ prestataire[1] }} {{ prestataire[2] }}</h5>
-                <p class="card-text text-muted">Statut : {{ prestataire[5] }}</p>
-                <p class="card-text emploi">Catégorie : {{ prestataire[11] }}</p>
-                <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">
-                  Voir plus
-                </button>
-              </div>
-            </div>
-          </div>
+       {% if prestataire[5] == 'active' %}
+      <div class="col-md-4 mb-4" data-aos="fade-up">
+        <div class="card prestataire-card">
+          <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="rounded-circle mx-auto d-block" style="width:250px; height: 250px; object-fit: cover; object-position: top;" alt="Photo du prestataire">
 
-          <!-- Modal détails -->
-          <div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                </div>
-                <div class="modal-body">
-                  <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="">
-                  <ul>
-                    <li><strong>Nom :</strong> {{ prestataire[1] }}</li>
-                    <li><strong>Prénom :</strong> {{ prestataire[2] }}</li>
-                    <li><strong>Téléphone :</strong> {{ prestataire[3] }}</li>
-                    <li><strong>Email :</strong> {{ prestataire[4] }}</li>
-                    <li><strong>Commune :</strong> {{ prestataire[6] }}</li>
-                    <li><strong>Genre :</strong> {{ prestataire[7] }}</li>
-                    <li><strong>Langue :</strong> {{ prestataire[8] }}</li>
-                    <li><strong>Catégorie :</strong> {{ prestataire[11] }}</li>
-                  </ul>
-                </div>
-                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                 </div>
-              </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ prestataire[1] }} {{ prestataire[2] }}</h5>
+            <p class="card-text emploi">Catégorie : {{ prestataire[11] }}</p>
+            <p class="card-text commune">Commune : {{ prestataire[6] }}</p>
+            <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">Voir plus</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="">
+
+              <ul>
+                <li><strong>Nom :</strong> {{ prestataire[1] }}</li>
+                <li><strong>Prénom :</strong> {{ prestataire[2] }}</li>
+                <li><strong>Téléphone :</strong> {{ prestataire[3] }}</li>
+                <li><strong>Email :</strong> {{ prestataire[4] }}</li>
+                <li><strong>Commune :</strong> {{ prestataire[6] }}</li>
+                <li><strong>Genre :</strong> {{ prestataire[7] }}</li>
+                <li><strong>Langue :</strong> {{ prestataire[8] }}</li>
+                <li><strong>Catégorie :</strong> {{ prestataire[11] }}</li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
           </div>
-        {% endif %}
+        </div>
+      </div>
+       {% endif %}
       {% endfor %}
     </div>
   </section>
 
 
+
   <section id="contact" class="container my-5">
     <h2 class="section-title" data-aos="fade-up">Contact</h2>
-    <form data-aos="zoom-in">
-      <div class="mb-3">
-        <label for="name" class="form-label">Nom</label>
-        <input type="text" class="form-control" id="name" required>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" required>
-      </div>
-      <div class="mb-3">
+    <form action="/send_message" method="POST">
+    <div class="mb-3">
+        <label for="name" class="form-label">name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">E-mail</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <div class="mb-3">
         <label for="message" class="form-label">Message</label>
-        <textarea class="form-control" id="message" rows="4" required></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">
-        <a href="{{ url_for('statistics') }}" > Envoyer </a>
-        </button>
-    </form>
+        <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+    <!-- Message avec coordonnées -->
+   <div class="contact-info" style="margin-top: 20px; font-size: 16px; color: #555;">
+     <p>Pour toute question, vous pouvez nous contacter à :</p>
+     <p><strong>Email :</strong> ffkll@gmail.com</p>
+     <p><strong>Téléphone :</strong> +222 46 87 58 66</p>
+   </div>
   </section>
+
 
   <footer class="text-center">
     <p class="mb-0">&copy; 2025 Service à Domicile. Tous droits réservés.</p>
@@ -269,5 +333,30 @@
   <script>
     AOS.init();
   </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keyup', () => {
+      const filter = searchInput.value.toLowerCase();
+      const cards = document.querySelectorAll('.prestataire-card');
+
+      cards.forEach(card => {
+        const nom = card.querySelector('.card-title').textContent.toLowerCase();
+        const catégorie = card.querySelector('.emploi')?.textContent.toLowerCase() || '';
+        const commune = card.querySelector('.commune')?.textContent.toLowerCase() || '';
+
+        if (nom.includes(filter) || catégorie.includes(filter) || commune.includes(filter)) {
+          card.closest('.col-md-4').style.display = '';
+        } else {
+          card.closest('.col-md-4').style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
