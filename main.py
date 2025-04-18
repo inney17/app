@@ -31,49 +31,71 @@ def allowed_file(filename):
 @app.route("/")
 def index():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM prestataire")  # Récupérer tous les prestataires
-    prestataire = cur.fetchall()  # Cela retourne toutes les lignes
+    cur.execute("SELECT * FROM prestataire")
+    prestataire = cur.fetchall()
     cur.close()
 
-    return render_template('index.html', prestataire=prestataire)
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT DISTINCT commune FROM prestataire")
+    communes = [row[0] for row in cur.fetchall()]
+
+    cur.execute("SELECT DISTINCT Langue FROM prestataire")
+    langues = [row[0] for row in cur.fetchall()]
+
+    cur.execute("SELECT id, catégorie FROM service")
+    categories = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        "index.html",
+        prestataire=prestataire,
+        communes=communes,
+        langues=langues,
+        categories=categories
+    )
 
 
 # Route : Connexion admin
 
+
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
-    # Récupérer toutes les données du prestataire  pour le formulaire
-
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, catégorie FROM service")
+    services = cur.fetchall()
 
     if request.method == 'POST':
         nom = request.form.get('Nom')
         prenom = request.form.get('prenom')
-        téléphone = request.form.get('téléphone')  # Valeur de la catégorie sélectionnée
+        téléphone = request.form.get('téléphone')
         email = request.form.get('email')
         statut = request.form.get('statut')
         commune = request.form.get('commune')
         genre = request.form.get('genre')
         langue = request.form.get('langue')
-        catégorie = request.form.get('catégorie')
+        service_id = request.form.get('service_id')
 
         file = request.files['image']
-
         image_path = None
         if file and allowed_file(file.filename):
-            filename=secure_filename(file.filename)
+            filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             image_path = f"{UPLOAD_FOLDER}/{filename}"
 
-        cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO prestataire (nom, prenom, téléphone,image_path, email, statut, commune,genre,langue, catégorie) 
-            VALUES (%s, %s, %s, %s,%s, %s, %s, %s, %s, %s)
-        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, catégorie))
+            INSERT INTO prestataire (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id))
+
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('index'))
 
-    return render_template('inscription.html')
+    cur.close()
+    return render_template('inscription.html', services=services)
+
+
+
 
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete(id):
@@ -261,7 +283,7 @@ def messages():
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('admin', None)  # Supprimer la session de l'admin
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/paiement', methods=['GET', 'POST'])
 def paiement():
@@ -320,6 +342,7 @@ def paiement():
 
     cursor.close()
     return render_template('paiement.html', prestataires=prestataires, paiements=paiements)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

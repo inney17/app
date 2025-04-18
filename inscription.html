@@ -38,16 +38,11 @@
                         <input type="text" id="email" name="email" class="form-control" rows="4" placeholder="Entrez votre email">
                     </div>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Mot de passe:</label>
-                        <input type="text" id="password" name="password" class="form-control" rows="4" placeholder="Entrez votre mot de passe" required>
-                    </div>
-
 
                      <div class="mb-3">
                         <label for="statut" class="form-label">statut:</label>
                         <select id="statut" name="statut" class="form-select" required>
-                            <option value="active">active</option>
+
                             <option value="inactive">inactive</option>
                         </select>
                     </div>
@@ -70,14 +65,20 @@
                         <input type="text" id="langue" name="langue" class="form-control" rows="4" placeholder="Entrez votre langue">
                     </div>
 
-                    <div class="mb-3">
-                        <label for="catégorie" class="form-label">Catégorie:</label>
-                        <input type="text" id="catégorie" name="catégorie" class="form-control" rows="4" placeholder="Entrez votre catégorie de service">
-                    </div>
+                        <div class="mb-3">
+                            <label for="service_id" class="form-label">Catégorie:</label>
+                            <select id="service_id" name="service_id" class="form-select" required>
+                                    <option value="">-- Sélectionnez une catégorie --</option>
+                                    {% for service in services %}
+                                        <option value="{{ service[0] }}">{{ service[1] }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+
 
                     <div class="mb-3">
                         <label for="image" class="form-label">Image :</label>
-                        <input type="file" id="image" name="image" class="form-control" >
+                        <input type="file" id="image" name="image" class="form-control"  required >
                     </div>
 
 
