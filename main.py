@@ -3,8 +3,18 @@ import os
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
+db = SQLAlchemy()
 
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    contenu = db.Column(db.Text, nullable=False)
+    date_reception = db.Column(db.DateTime, default=datetime.utcnow)
+    lu = db.Column(db.Boolean, default=False)  # Pour savoir si le message a été lu
 
 app = Flask(__name__)
 
@@ -28,73 +38,83 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Route : Page d'accueil
-@app.route("/")
+@app.route('/')
 def index():
+    if 'admin' not in session:
+        return redirect(url_for('login'))  # ou une autre route pour l'admin
+
+
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM prestataire")
+
+    # Requête SQL pour récupérer les prestataires et leurs catégories
+    cur.execute('''
+       SELECT prestataire.id, prestataire.nom, prestataire.prenom, prestataire.téléphone,
+               prestataire.email, prestataire.statut, prestataire.commune, prestataire.genre,
+               prestataire.langue, service.catégorie, prestataire.image_path
+        FROM prestataire
+        JOIN service ON prestataire.id_service = service.id_service
+        WHERE prestataire.statut = 'active'
+    ''')
+
     prestataire = cur.fetchall()
+
+    # Fermer le curseur
     cur.close()
 
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT DISTINCT commune FROM prestataire")
-    communes = [row[0] for row in cur.fetchall()]
-
-    cur.execute("SELECT DISTINCT Langue FROM prestataire")
-    langues = [row[0] for row in cur.fetchall()]
-
-    cur.execute("SELECT id, catégorie FROM service")
-    categories = cur.fetchall()
-    cur.close()
-
-    return render_template(
-        "index.html",
-        prestataire=prestataire,
-        communes=communes,
-        langues=langues,
-        categories=categories
-    )
+    # Passer les prestataires récupérés à la template
+    return render_template('index.html', prestataire=prestataire)
 
 
 # Route : Connexion admin
 
-
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT id, catégorie FROM service")
-    services = cur.fetchall()
-
     if request.method == 'POST':
-        nom = request.form.get('Nom')
+        # Récupérer les données du formulaire d'inscription
+        nom = request.form.get('nom')
+
         prenom = request.form.get('prenom')
-        téléphone = request.form.get('téléphone')
         email = request.form.get('email')
+        téléphone = request.form.get('téléphone')
         statut = request.form.get('statut')
         commune = request.form.get('commune')
         genre = request.form.get('genre')
         langue = request.form.get('langue')
-        service_id = request.form.get('service_id')
+        service_id = request.form.get('id_service')
+        password = request.form.get('password')
+        if not password:
+            # Retourner une erreur si le mot de passe est vide
+            return render_template('inscription.html', error="Le mot de passe ne peut pas être vide")
+
+            # Vérification de la complexité du mot de passe (si tu le souhaites)
+        if len(password) < 6:
+            return render_template('inscription.html', error="Le mot de passe doit contenir au moins 6 caractères")
 
         file = request.files['image']
+
         image_path = None
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             image_path = f"{UPLOAD_FOLDER}/{filename}"
 
+        # Insertion dans la base de données
+        cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO prestataire (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id))
-
+            INSERT INTO prestataire (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, id_service, password)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id, password))
         mysql.connection.commit()
         cur.close()
-        return redirect(url_for('index'))
+        return redirect(url_for('index'))  # Rediriger après l'inscription
 
+    # Récupérer toutes les catégories de service
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id_service, catégorie FROM service")
+    service = cur.fetchall()
     cur.close()
-    return render_template('inscription.html', services=services)
 
-
+    return render_template('inscription.html', service=service)
 
 
 @app.route('/delete/<int:id>', methods=['POST'])
@@ -110,7 +130,7 @@ def delete(id):
 def update(id):
     # Connexion à la base de données pour récupérer les informations de l'utilisateur
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM prestataire WHERE id = %s", (id,))
+    cur.execute("SELECT * FROM prestataire,service  WHERE id = %s", (id,))
     prestataire = cur.fetchone()
     cur.close()
 
@@ -126,6 +146,7 @@ def update(id):
         genre = request.form.get('genre')
         langue = request.form.get('langue')
         catégorie = request.form.get('catégorie')
+        password = request.form.get('password')
         file = request.files['image']
 
         image_path = prestataire[10]  # Garder l'ancienne image par défaut
@@ -143,10 +164,10 @@ def update(id):
         cur.execute("""
                      UPDATE prestataire 
                      SET nom = %s, prenom = %s, email = %s, téléphone = %s, statut = %s, 
-                         commune = %s, genre = %s, langue = %s, catégorie = %s, image_path = %s
+                         commune = %s, genre = %s, langue = %s, catégorie = %s, password = %s, image_path = %s
 
                      WHERE id = %s
-                 """, (nom, prenom, email, téléphone, statut, commune, genre, langue, catégorie, image_path, id))
+                 """, (nom, prenom, email, téléphone, statut, commune, genre, langue, catégorie, password, image_path, id))
 
         mysql.connection.commit()
         cur.close()
@@ -156,12 +177,11 @@ def update(id):
         # Si la méthode est GET, on affiche le formulaire avec les informations actuelles de l'utilisateur
     return render_template('update.html', prestataire=prestataire)
 
-
 @app.route('/statistics')
 def statistics():
     cur = mysql.connection.cursor()
 
-    # Récupérer des statistiques de base
+    # Récupérer des statistiques supplémentaires ou spécifiques
     cur.execute("SELECT COUNT(*) FROM prestataire")
     total_prestataire = cur.fetchone()[0]
 
@@ -171,38 +191,19 @@ def statistics():
     cur.execute("SELECT COUNT(*) FROM prestataire WHERE statut = 'inactive'")
     inactive_prestataire = cur.fetchone()[0]
 
+    # Si tu veux ajouter d'autres statistiques ou graphiques
     cur.execute("SELECT COUNT(DISTINCT catégorie) FROM prestataire")
     total_catégorie = cur.fetchone()[0]
 
-    # Récupérer le total des paiements des prestataires actifs
-    cur.execute("""
-        SELECT SUM(montant) FROM paiement
-        JOIN prestataire ON paiement.prestataire_id = prestataire.id
-        WHERE prestataire.statut = 'active'
-    """)
-    total_paiement_actif = cur.fetchone()[0] or 0
-
-    # Récupérer les données pour la courbe des paiements (30 derniers jours)
-    cur.execute("""
-        SELECT 
-            DATE(date_paiement) AS date,
-            SUM(montant) AS total
-        FROM paiement
-        WHERE date_paiement >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-        GROUP BY date
-        ORDER BY date
-    """)
-    paiements_data = cur.fetchall()
 
     cur.close()
 
+    # Retourner un template où on affiche ces stats
     return render_template('statistics.html',
-                         total_prestataire=total_prestataire,
-                         active_prestataire=active_prestataire,
-                         inactive_prestataire=inactive_prestataire,
-                         total_catégorie=total_catégorie,
-                         total_paiement_actif=total_paiement_actif
-                        )
+                           total_prestataire=total_prestataire,
+                           active_prestataire=active_prestataire,
+                           inactive_prestataire=inactive_prestataire,
+                           total_catégorie=total_catégorie)
 
 from datetime import datetime
 
@@ -249,19 +250,21 @@ def admin_dashboard():
 
     cur = mysql.connection.cursor()
 
-    # Récupérer les prestataires
-    cur.execute("SELECT * FROM prestataire")
+    # Récupérer les prestataires avec la catégorie de service
+    cur.execute('''
+        SELECT prestataire.id, prestataire.nom, prestataire.prenom, prestataire.téléphone,
+               prestataire.email, prestataire.statut, prestataire.commune, prestataire.genre,
+               prestataire.langue, service.catégorie, prestataire.image_path
+        FROM prestataire
+        JOIN service ON prestataire.id_service = service.id_service
+    ''')
     prestataire = cur.fetchall()
 
-
-
+    cur.close()
 
     return render_template(
         'admin_dashboard.html',
         prestataire=prestataire
-
-
-
     )
 
 @app.route('/messages')
@@ -283,30 +286,17 @@ def messages():
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('admin', None)  # Supprimer la session de l'admin
-    return redirect(url_for('index'))
+    return redirect(url_for('admin_logout'))
 
 @app.route('/paiement', methods=['GET', 'POST'])
 def paiement():
-    conn = mysql.connection
-    cursor = conn.cursor()
+    conn = mysql.connection  # 🛠️ on va chercher la connexion
+    cursor = conn.cursor()   # puis on ouvre le curseur
 
-    # 🔁 Mise à jour automatique des statuts expirés
-    cursor.execute("""
-        UPDATE prestataire
-        SET statut = 'inactive'
-        WHERE id IN (
-            SELECT p.prestataire_id
-            FROM paiement p
-            WHERE p.date_expiration < NOW()
-        )
-    """)
-    conn.commit()
-
-    # 🔎 Prestataires à payer
+    # Après tu fais tes requêtes normalement...
     cursor.execute("SELECT * FROM prestataire WHERE statut = 'inactive'")
     prestataires = cursor.fetchall()
 
-    # 💳 Paiement reçu
     if request.method == 'POST':
         prestataire_id = request.form['prestataire_id']
         montant = request.form['montant']
@@ -314,12 +304,12 @@ def paiement():
         date_expiration = (datetime.now().replace(month=datetime.now().month + 1)).strftime('%Y-%m-%d')
 
         cursor.execute("""
-            INSERT INTO paiement (prestataire_id, montant, date_paiement, date_expiration)
+            INSERT INTO paiement (prestataire_id, montant, date_paiement, date_expiration) 
             VALUES (%s, %s, %s, %s)
         """, (prestataire_id, montant, date_paiement, date_expiration))
 
         cursor.execute("""
-            UPDATE prestataire
+            UPDATE prestataire 
             SET statut = 'active'
             WHERE id = %s
         """, (prestataire_id,))
@@ -327,21 +317,22 @@ def paiement():
         conn.commit()
         return redirect(url_for('paiement'))
 
-    # 🧾 Historique des paiements
     cursor.execute("""
-        SELECT paiement.id, prestataire.Nom, prestataire.Prenom, paiement.date_paiement,
-               paiement.montant, paiement.date_expiration,
-               CASE 
-                   WHEN paiement.date_expiration < NOW() THEN 'inactive' 
-                   ELSE 'active'
-               END AS statut
-        FROM paiement
+        SELECT paiement.id, prestataire.Nom, prestataire.Prenom, paiement.date_paiement, 
+        paiement.montant, paiement.date_expiration, 
+        CASE 
+            WHEN paiement.date_expiration < NOW() THEN 'Expiré' 
+            ELSE 'active' 
+        END AS statut
+        FROM paiement 
         JOIN prestataire ON paiement.prestataire_id = prestataire.ID
     """)
     paiements = cursor.fetchall()
 
     cursor.close()
+
     return render_template('paiement.html', prestataires=prestataires, paiements=paiements)
+
 
 
 if __name__ == "__main__":
