@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Supprimez l'autre chargement de Bootstrap pour éviter les conflits -->
   <style>
     body {
       background: linear-gradient(to bottom right, #e3f2fd, #ffffff);
@@ -116,66 +116,135 @@
     .contact-info p {
       margin: 5px 0;
     }
-
     .contact-info strong {
       color: #333;
     }
     .search-bar {
-    border-radius: 25px; /* Bordures arrondies */
-    padding: 12px 20px; /* Espacement interne */
-    font-size: 1rem; /* Taille du texte */
-    background-color: #f8f9fa; /* Couleur de fond claire */
-    border: 2px solid #007bff; /* Bordure bleue */
-    transition: all 0.3s ease; /* Transition fluide */
-  }
-
-  .search-bar:focus {
-    border-color: #0d6efd; /* Bordure bleue lors du focus */
-    box-shadow: 0 0 5px rgba(13, 110, 253, 0.5); /* Effet d'ombre sur focus */
-    outline: none; /* Retirer l'outline par défaut */
-  }
-
-  .search-bar::placeholder {
-    color: #6c757d; /* Couleur grise pour le texte du placeholder */
-    font-style: italic; /* Italique pour le placeholder */
-  }
-
-  .search-bar:hover {
-    border-color: #0056b3; /* Changer la couleur de la bordure au survol */
-  }
+      border-radius: 25px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      background-color: #f8f9fa;
+      border: 2px solid #007bff;
+      transition: all 0.3s ease;
+    }
+    .search-bar:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+      outline: none;
+    }
+    .search-bar::placeholder {
+      color: #6c757d;
+      font-style: italic;
+    }
+    .search-bar:hover {
+      border-color: #0056b3;
+    }
     .rounded-image {
-    border-radius: 15px; /* Bordures arrondies pour l'image */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ombre douce pour l'image */
-    transition: all 0.3s ease; /* Transition fluide lors de l'effet hover */
-    object-fit: cover; /* Assurer que l'image couvre tout l'espace sans déformer */
-  }
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      object-fit: cover;
+    }
+    .rounded-image:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
 
-  .rounded-image:hover {
-    transform: scale(1.05); /* Effet de zoom léger au survol */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Ombre plus marquée au survol */
-  }
+    /* Sidebar */
+    #filterSidebar {
+      background: #f8f9fa;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+      padding: 0;
+      width: 300px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: -300px;
+      transition: left 0.3s ease;
+      z-index: 1050;
+      overflow-y: auto;
+    }
+    #filterSidebar.show { left: 0; }
+    #filterSidebar .sidebar-header {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      padding: 20px;
+      border-top-right-radius: 8px;
+    }
+    #filterSidebar h5 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    #filterSidebar .btn-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: white;
+      opacity: 0.8;
+    }
+    #filterSidebar .btn-close:hover {
+      opacity: 1;
+    }
+    .filter-group { padding: 15px 20px; border-bottom: 1px solid #dee2e6; }
+    .filter-group:last-child { border-bottom: none; }
+    .filter-group .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      display: block;
+      font-size: 1rem;
+    }
+    .filter-group .form-select {
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+    .filter-group .form-check-input {
+      margin-top: 0.3rem;
+    }
+    #filterSidebar .btn-primary {
+      background-color:light blue;
+      border-color: #007bff;
+      border-radius: 6px;
+      padding: 10px;
+      font-weight: 600;
+      margin: 15px 20px 5px;
+    }
+    #filterSidebar .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
 
-
-  </style>
+    #filterSidebar {
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+  padding: 0;
+  width: 300px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: -300px;
+  transition: left 0.3s ease;
+  z-index: 1050;
+  overflow-y: auto;
+  border-right: 2px solid #dee2e6;
+}
+</style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg">
-    <div class="mb-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Recherche...">
-    </div>
+    <button class="toggle-filter" onclick="toggleSidebar()" aria-label="Filtrer">
+        <i class="fas fa-sliders-h"></i>
+    </button>
+
     <div class="container">
       <a class="navbar-brand" href="#">Service à Domicile</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
-
-
-
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
           <li class="nav-item"><a class="nav-link" href="#prestataires">Prestataires</a></li>
-
           <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
         </ul>
       </div>
@@ -190,12 +259,12 @@
     </div>
   </header>
 
-   <!-- Modal Connexion -->
+  <!-- Modal Connexion -->
   <div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="adminLoginModalLabel">Connexion </h5>
+          <h5 class="modal-title" id="adminLoginModalLabel">Connexion</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
@@ -215,10 +284,109 @@
     </div>
   </div>
 
+{% if session.get('show_disable_modal') %}
+<!-- Modale Bootstrap visible -->
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Désactivation du compte</h5>
+        <form method="POST" action="{{ url_for('cancel_disable_modal') }}">
+          <button type="submit" class="btn-close" aria-label="Fermer"></button>
+        </form>
+      </div>
+      <div class="modal-body">
+        <p>Voulez-vous désactiver votre compte ?</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="{{ url_for('disable_account') }}">
+          <button type="submit" class="btn btn-danger">Oui, désactiver</button>
+        </form>
+        <form method="POST" action="{{ url_for('cancel_disable_modal') }}">
+          <button type="submit" class="btn btn-secondary">Annuler</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+ <!-- Sidebar Filtering -->
+<div id="filterSidebar" class="bg-light p-3 position-fixed h-100" style="width:300px; left:-300px; top:0; transition:left .3s; z-index:1050;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="m-0">Filtres</h5>
+    <button class="btn-close" aria-label="Fermer" onclick="toggleSidebar()"></button>
+  </div>
+
+  <form id="filterForm" method="get" action="/" class="w-100">
+    <!-- Commune -->
+    <div class="mb-3">
+      <label class="form-label"><i class="fas fa-city text-primary me-2"></i>Commune</label>
+      <select name="commune" class="form-select">
+        <option value="">Toutes</option>
+        {% for c in communes %}
+          <option value="{{ c }}" {% if c==selected_commune %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Catégorie -->
+    <div class="mb-3">
+      <label class="form-label"><i class="fas fa-list-alt text-success me-2"></i>Catégorie</label>
+      <select name="categorie" class="form-select">
+        <option value="">Toutes</option>
+        {% for cat in categories %}
+          <option value="{{ cat }}" {% if cat==selected_categorie %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Prix -->
+    <div class="mb-3">
+      <label class="form-label"><i class="fas fa-coins text-warning me-2"></i>Prix</label>
+      <select name="prix" class="form-select">
+         <option value="" {% if not selected_prix %}selected{% endif %}>Tous</option>
+         <option value="10000-15000"   {% if selected_prix=='10000-15000'   %}selected{% endif %}>10000–15000</option>
+         <option value="15000-25000"  {% if selected_prix=='15000-25000'  %}selected{% endif %}>15000–25000</option>
+         <option value="25000-40000" {% if selected_prix=='25000-40000' %}selected{% endif %}>25000–40000</option>
+         <option value="40000+"   {% if selected_prix=='40000+'   %}selected{% endif %}>40000 et +</option>
+      </select>
+    </div>
+
+    <!-- Langue -->
+    <div class="mb-3">
+      <label class="form-label"><i class="fas fa-language text-danger me-2"></i>Langue</label>
+      {% for lang in langues %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="langue" value="{{ lang }}" id="langue_{{ loop.index }}" {% if lang==selected_langue %}checked{% endif %}>
+          <label class="form-check-label" for="langue_{{ loop.index }}">{{ lang }}</label>
+        </div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-success w-100 mb-2">Appliquer</button>
+    <button type="button" class="btn btn-light w-100" onclick="toggleSidebar()">Annuler</button>
+  </form>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sb = document.getElementById('filterSidebar');
+    if (sb.style.left === '0px') {
+      sb.style.left = '-300px';
+    } else {
+      sb.style.left = '0px';
+    }
+  }
+
+  // Sur le bouton de la navbar tu dois avoir :
+  // <button onclick="toggleSidebar()" class="btn btn-outline-light"><i class="fas fa-sliders-h"></i></button>
+</script>
 
 
-  <section id="services" class="container">
-    <h2 class="section-title" data-aos="fade-right"> Services</h2>
+
+    <section id="services" class="container">
+    <h2 class="section-title" data-aos="fade-right">Services</h2>
     <div class="row text-center">
       <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
         <div class="category-tile">
@@ -245,88 +413,161 @@
   </section>
 
   <section id="prestataires" class="container">
-    <h2 class="section-title" data-aos="fade-left"> Prestataires de service</h2>
-
-
-    <div class="row">
-      {% for prestataire in prestataire %}
-       {% if prestataire[5] == 'active' %}
-      <div class="col-md-4 mb-4" data-aos="fade-up">
-        <div class="card prestataire-card">
-          <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="rounded-circle mx-auto d-block" style="width:250px; height: 250px; object-fit: cover; object-position: top;" alt="Photo du prestataire">
-
-          <div class="card-body">
-            <h5 class="card-title">{{ prestataire[1] }} {{ prestataire[2] }}</h5>
-            <p class="card-text emploi">Catégorie : {{ prestataire[11] }}</p>
-            <p class="card-text commune">Commune : {{ prestataire[6] }}</p>
-            <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">Voir plus</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-              <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="">
-
-              <ul>
-                <li><strong>Nom :</strong> {{ prestataire[1] }}</li>
-                <li><strong>Prénom :</strong> {{ prestataire[2] }}</li>
-                <li><strong>Téléphone :</strong> {{ prestataire[3] }}</li>
-                <li><strong>Email :</strong> {{ prestataire[4] }}</li>
-                <li><strong>Commune :</strong> {{ prestataire[6] }}</li>
-                <li><strong>Genre :</strong> {{ prestataire[7] }}</li>
-                <li><strong>Langue :</strong> {{ prestataire[8] }}</li>
-                <li><strong>Catégorie :</strong> {{ prestataire[11] }}</li>
-              </ul>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+    <h2 class="section-title" data-aos="fade-left">Prestataires de service</h2>
+    <div class="row" id="prestataire-list">
+      {% for p in prestataires %}
+        {% if p.statut == 'active' %}
+        <div class="col-md-4 mb-4" data-aos="fade-up">
+          <div class="card prestataire-card">
+            <img src="{{ p.image_path or 'static/uploads/default.jpg' }}"
+                 class="rounded-circle mx-auto d-block"
+                 style="width:250px; height:250px; object-fit:cover;"
+                 alt="Photo de {{ p.nom }} {{ p.prenom }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ p.nom }} {{ p.prenom }}</h5>
+              <p class="card-text emploi">Catégorie : {{ p.categorie or 'Non spécifiée' }}</p>
+              <p class="card-text commune">Commune : {{ p.commune }}</p>
+              <p class="card-text prix">prix : {{ p.prix }}</p>
+              <p class="card-text langue">Langue : {{ p.langue }}</p>
+              <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ p.id }}">
+                Voir plus
+              </button>
             </div>
           </div>
         </div>
-      </div>
-       {% endif %}
+
+        <!-- Modal Prestataire -->
+        <div class="modal fade" id="modal{{ p.id }}" tabindex="-1" aria-labelledby="modalLabel{{ p.id }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel{{ p.id }}">Détails du prestataire</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+              </div>
+              <div class="modal-body">
+                <img src="{{ p.image_path or 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="Photo de {{ p.nom }} {{ p.prenom }}">
+                <ul>
+                  <li><strong>Nom :</strong> {{ p.nom }}</li>
+                  <li><strong>Prénom :</strong> {{ p.prenom }}</li>
+                  <li><strong>Téléphone :</strong> {{ p.téléphone }}</li>
+                  <li><strong>Email :</strong> {{ p.email }}</li>
+                  <li><strong>Commune :</strong> {{ p.commune }}</li>
+                  <li><strong>Genre :</strong> {{ p.genre }}</li>
+                  <li><strong>prix :</strong> {{ p.prix }}</li>
+                  <li><strong>Langue :</strong> {{ p.langue }}</li>
+                  <li><strong>Catégorie :</strong> {{ p.categorie or 'Non spécifiée' }}</li>
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
       {% endfor %}
     </div>
   </section>
 
-
-
   <section id="contact" class="container my-5">
     <h2 class="section-title" data-aos="fade-up">Contact</h2>
     <form action="/send_message" method="POST">
-    <div class="mb-3">
+      <div class="mb-3">
         <label for="name" class="form-label">name</label>
         <input type="text" class="form-control" id="name" name="name" required>
-    </div>
-    <div class="mb-3">
+      </div>
+      <div class="mb-3">
         <label for="email" class="form-label">E-mail</label>
         <input type="email" class="form-control" id="email" name="email" required>
-    </div>
-    <div class="mb-3">
+      </div>
+      <div class="mb-3">
         <label for="message" class="form-label">Message</label>
         <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+    <div class="contact-info" style="margin-top: 20px; font-size: 16px; color: #555;">
+      <p>Pour toute question, vous pouvez nous contacter à :</p>
+      <p><strong>Email :</strong> ffkll@gmail.com</p>
+      <p><strong>Téléphone :</strong> +222 46 87 58 66</p>
     </div>
-    <button type="submit" class="btn btn-primary">Envoyer</button>
-</form>
-    <!-- Message avec coordonnées -->
-   <div class="contact-info" style="margin-top: 20px; font-size: 16px; color: #555;">
-     <p>Pour toute question, vous pouvez nous contacter à :</p>
-     <p><strong>Email :</strong> ffkll@gmail.com</p>
-     <p><strong>Téléphone :</strong> +222 46 87 58 66</p>
-   </div>
   </section>
-
 
   <footer class="text-center">
     <p class="mb-0">&copy; 2025 Service à Domicile. Tous droits réservés.</p>
   </footer>
+<script>
+  // Gestion du filtrage côté client (commune, catégorie, langue, note, ville, prix)
+  document.getElementById("filterForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // Récupérer les filtres sélectionnés
+    const communeFilter = this.elements["commune"]?.value.toLowerCase() || "";
+    const categorieFilter = this.elements["categorie"]?.value.toLowerCase() || "";
+    const communeFilter = this.elements["commune"]?.value.toLowerCase() || "";
+    const noteFilter = parseFloat(this.elements["note"]?.value) || 0;
+
+    const langueCheckboxes = this.querySelectorAll('input[name="langue"]:checked');
+    const languesFilter = Array.from(langueCheckboxes).map(cb => cb.value.toLowerCase());
+
+    const prixFilter = this.elements["prix"]?.value;
+    let minPrix = 0, maxPrix = Infinity;
+    if (prixFilter) {
+      [minPrix, maxPrix] = prixFilter.split('-').map(Number);
+    }
+
+    // Cibler toutes les cartes prestataires
+    const cards = document.querySelectorAll('.prestataire-card');
+
+    cards.forEach(card => {
+      const cardCommune = card.querySelector('.commune')?.textContent.toLowerCase() || "";
+      const cardCategorie = card.querySelector('.emploi')?.textContent.toLowerCase() || "";
+      const cardVille = card.getAttribute("data-ville")?.toLowerCase() || "";
+      const cardNote = parseFloat(card.getAttribute("data-note")) || 0;
+      const cardLangue = card.querySelector('.langue')?.textContent.toLowerCase() || "";
+
+      const prixText = card.querySelector('.prix')?.textContent || "";
+      const prixMatch = prixText.match(/\d+/);
+      const cardPrix = prixMatch ? parseInt(prixMatch[0]) : 0;
+
+      let show = true;
+
+      if (communeFilter && !cardCommune.includes(communeFilter)) {
+        show = false;
+      }
+
+      if (categorieFilter && !cardCategorie.includes(categorieFilter)) {
+        show = false;
+      }
+
+      if (villeFilter && cardVille !== villeFilter) {
+        show = false;
+      }
+
+      if (noteFilter && cardNote < noteFilter) {
+        show = false;
+      }
+
+      if (languesFilter.length > 0) {
+        const matchLangue = languesFilter.some(lang => cardLangue.includes(lang));
+        if (!matchLangue) {
+          show = false;
+        }
+      }
+
+      if (prixFilter && (cardPrix < minPrix || cardPrix > maxPrix)) {
+        show = false;
+      }
+
+      card.closest('.col-md-4').style.display = show ? '' : 'none';
+    });
+
+    // Fermer la sidebar après application des filtres
+    toggleSidebar();
+  });
+</script>
+
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -336,27 +577,11 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('keyup', () => {
-      const filter = searchInput.value.toLowerCase();
-      const cards = document.querySelectorAll('.prestataire-card');
+  <script>
 
-      cards.forEach(card => {
-        const nom = card.querySelector('.card-title').textContent.toLowerCase();
-        const catégorie = card.querySelector('.emploi')?.textContent.toLowerCase() || '';
-        const commune = card.querySelector('.commune')?.textContent.toLowerCase() || '';
-
-        if (nom.includes(filter) || catégorie.includes(filter) || commune.includes(filter)) {
-          card.closest('.col-md-4').style.display = '';
-        } else {
-          card.closest('.col-md-4').style.display = 'none';
-        }
+        });
       });
     });
-  });
-</script>
-
+  </script>
 </body>
 </html>

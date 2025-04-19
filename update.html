@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="container my-5">
-        <h1 class="text-center mb-4">Gérer mon compte</h1>
+        <h1 class="text-center mb-4">Mise à jour du compte</h1>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <form method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
@@ -63,9 +63,20 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="catégorie" class="form-label">catégorie:</label>
-                        <input type="text" id="catégorie" name="catégorie" class="form-control" rows="4" value="{{ prestataire[11] }}" placeholder="Entrez votre catégorie de service">
+                        <label for="id_service" class="form-label">Catégorie :</label>
+                        <select id="id_service" name="id_service" class="form-select" required>
+                            {% for s in services %}
+                                <option value="{{ s[0] }}" {% if s[0] == prestataire[9] %}selected{% endif %}>{{ s[1] }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
+
+                    <div class="mb-3">
+                         <label for="password" class="form-label">Mot de passe:</label>
+                         <input type="password" id="password" name="password" class="form-control" rows="4" placeholder="Mot de passe">
+                    </div>
+
+
 
                     <div class="mb-3">
                         <label class="form-label">profile :</label><br>
@@ -74,6 +85,35 @@
                     <div class="mb-3">
                         <label for="image" class="form-label">Changer de profile :</label>
                         <input type="file" id="image" name="image" class="form-control">
+
+
+<div class="mb-3">
+    <label class="form-label">Carte d'identité actuelle :</label><br>
+     <img src="{{ url_for('static', filename=prestataire[12].replace('static/', '')) }}" alt="Image de {{ prestataire[12] }}" class="img-fluid mb-3" style="max-width: 100%; max-height: 200px;">
+</div>
+<div class="mb-3">
+    <label for="carte_identité" class="form-label">Nouvelle carte d'identité :</label>
+    <input type="file" id="carte_identité" name="carte_identité" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Casier judiciaire actuel :</label><br>
+     <img src="{{ url_for('static', filename=prestataire[13].replace('static/', '')) }}" alt="Image de {{ prestataire[13] }}" class="img-fluid mb-3" style="max-width: 100%; max-height: 200px;">
+</div>
+<div class="mb-3">
+    <label for="casier_judiciaire" class="form-label">Nouveau casier judiciaire :</label>
+    <input type="file" id="casier_judiciaire" name="casier_judiciaire" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Papier de séjour actuel :</label><br>
+     <img src="{{ url_for('static', filename=prestataire[14].replace('static/', '')) }}" alt="Image de {{ prestataire[14] }}" class="img-fluid mb-3" style="max-width: 100%; max-height: 200px;">
+</div>
+<div class="mb-3">
+    <label for="papier_séjour" class="form-label">Nouveau papier de séjour :</label>
+    <input type="file" id="papier_séjour" name="papier_séjour" class="form-control">
+</div>
+
                     </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-success">

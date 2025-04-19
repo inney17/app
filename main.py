@@ -67,12 +67,23 @@ def index():
 
 # Route : Connexion admin
 
+import os
+from flask import request, render_template, redirect, url_for
+from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
+
+# Configuration du dossier d'upload
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
     if request.method == 'POST':
-        # Récupérer les données du formulaire d'inscription
         nom = request.form.get('nom')
-
         prenom = request.form.get('prenom')
         email = request.form.get('email')
         téléphone = request.form.get('téléphone')
@@ -82,42 +93,55 @@ def inscription():
         langue = request.form.get('langue')
         service_id = request.form.get('id_service')
         password = request.form.get('password')
-        if not password:
-            # Retourner une erreur si le mot de passe est vide
-            return render_template('inscription.html', error="Le mot de passe ne peut pas être vide")
 
-            # Vérification de la complexité du mot de passe (si tu le souhaites)
+        if not password:
+            return render_template('inscription.html', error="Le mot de passe ne peut pas être vide")
         if len(password) < 6:
             return render_template('inscription.html', error="Le mot de passe doit contenir au moins 6 caractères")
 
-        file = request.files['image']
+        # Gérer les fichiers image
+        def save_file(fieldname):
+            f = request.files.get(fieldname)
+            if f and allowed_file(f.filename):
+                filename = secure_filename(f.filename)
+                f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return f"{UPLOAD_FOLDER}/{filename}"
+            return None
 
-        image_path = None
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            image_path = f"{UPLOAD_FOLDER}/{filename}"
+        image_path = save_file('image')
+        carte_identite_path = save_file('carte_identité')
+        casier_judiciaire_path = save_file('casier_judiciaire')
+        papier_sejour_path = save_file('papier_séjour')
 
-
+        # Hachage du mot de passe
         hashed_password = generate_password_hash(password)
+
         # Insertion dans la base de données
         cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO prestataire (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, id_service, hashed_password )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id, hashed_password ))
+            INSERT INTO prestataire (
+                nom, prenom, téléphone, image_path, email, statut, commune,
+                genre, langue, id_service, hashed_password,
+                carte_identité, casier_judiciaire, papier_séjour
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            nom, prenom, téléphone, image_path, email, statut, commune,
+            genre, langue, service_id, hashed_password,
+            carte_identite_path, casier_judiciaire_path, papier_sejour_path
+        ))
         mysql.connection.commit()
         cur.close()
-        return redirect(url_for('index'))  # Rediriger après l'inscription
 
-    # Récupérer toutes les catégories de service
+        return redirect(url_for('index'))
+
+    # Récupérer les services
     cur = mysql.connection.cursor()
     cur.execute("SELECT id_service, catégorie FROM service")
     service = cur.fetchall()
     cur.close()
 
     return render_template('inscription.html', service=service)
-
 
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete(id):
@@ -162,6 +186,11 @@ def update(id):
         password = request.form.get('password')  # Mot de passe optionnel
         image_path = prestataire[10]  # Chemin actuel de l’image
 
+        # Fichiers supplémentaires (Carte d'identité, Casier judiciaire, Papier de séjour)
+        carte_identite_path = prestataire[11]  # Carte d'identité actuelle
+        casier_judiciaire_path = prestataire[12]  # Casier judiciaire actuel
+        papier_séjour_path = prestataire[13]  # Papier de séjour actuel
+
         # Vérifier si une nouvelle image est envoyée
         if 'image' in request.files:
             file = request.files['image']
@@ -170,27 +199,54 @@ def update(id):
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 image_path = f"{app.config['UPLOAD_FOLDER']}/{filename}"
 
+        # Vérifier les fichiers de documents supplémentaires
+        if 'carte_identité' in request.files:
+            file = request.files['carte_identité']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                carte_identite_path = f"{app.config['UPLOAD_FOLDER']}/{filename}"
+
+        if 'casier_judiciaire' in request.files:
+            file = request.files['casier_judiciaire']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                casier_judiciaire_path = f"{app.config['UPLOAD_FOLDER']}/{filename}"
+
+        if 'papier_séjour' in request.files:
+            file = request.files['papier_séjour']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                papier_séjour_path = f"{app.config['UPLOAD_FOLDER']}/{filename}"
+
         # Hash du mot de passe uniquement si un nouveau est fourni
         if password:
             hashed_password = generate_password_hash(password)
         else:
-            hashed_password = prestataire[11]  # Mot de passe actuel
+            hashed_password = prestataire[14]  # Mot de passe actuel
 
         # Mise à jour des données en base
         cur = mysql.connection.cursor()
         cur.execute("""
             UPDATE prestataire 
             SET nom = %s, prenom = %s, email = %s, image_path = %s, téléphone = %s,
-                statut = %s, commune = %s, genre = %s, langue = %s, id_service = %s, hashed_password = %s
+                statut = %s, commune = %s, genre = %s, langue = %s, id_service = %s, 
+                carte_identité = %s, casier_judiciaire = %s, papier_séjour = %s, 
+                hashed_password = %s
             WHERE id = %s
         """, (
-        nom, prenom, email, image_path, téléphone, statut, commune, genre, langue, service_id, hashed_password, id))
+            nom, prenom, email, image_path, téléphone, statut, commune, genre, langue, service_id,
+            carte_identite_path, casier_judiciaire_path, papier_séjour_path, hashed_password, id
+        ))
         mysql.connection.commit()
         cur.close()
 
         return redirect(url_for('index'))
 
     return render_template('update.html', prestataire=prestataire, services=services)
+
 @app.route('/statistics')
 def statistics():
     cur = mysql.connection.cursor()
@@ -268,7 +324,8 @@ def admin_dashboard():
     cur.execute('''
         SELECT prestataire.id, prestataire.nom, prestataire.prenom, prestataire.téléphone,
                prestataire.email, prestataire.statut, prestataire.commune, prestataire.genre,
-               prestataire.langue, service.catégorie, prestataire.image_path
+               prestataire.langue, service.catégorie, prestataire.image_path,
+               prestataire.carte_identité, prestataire.casier_judiciaire, prestataire.papier_séjour
         FROM prestataire
         JOIN service ON prestataire.id_service = service.id_service
     ''')
