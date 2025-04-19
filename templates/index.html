@@ -1,73 +1,362 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRUD Flask MySQL</title>
-  <!-- Bootstrap CSS -->
+  <title>Service à Domicile</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- DataTables Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-  <!-- Font Awesome CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- DataTables JS -->
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #e3f2fd, #ffffff);
+      font-family: 'Poppins', sans-serif;
+    }
+    .navbar {
+      background-color: #007bff;
+    }
+    .navbar-brand, .nav-link, .navbar-toggler-icon {
+      color: white !important;
+    }
+    .header {
+      background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c') no-repeat center center/cover;
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+    .header-content {
+      position: relative;
+      z-index: 2;
+    }
+    .header h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+    }
+    .header p {
+      font-size: 1.25rem;
+    }
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-top: 60px;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #333;
+    }
+    .category-tile {
+      background: linear-gradient(135deg, #ffffff, #e3f2fd);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .category-tile:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #bbdefb, #ffffff);
+    }
+    .category-tile i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: #0d6efd;
+    }
+    .prestataire-card {
+      border: none;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease-in-out;
+    }
+    .prestataire-card:hover {
+      transform: translateY(-10px);
+    }
+    .prestataire-card img {
+      height: 220px;
+      object-fit: cover;
+      width: 100%;
+    }
+    .testimonial {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .modal-body ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .modal-body ul li {
+      padding: 8px 0;
+      font-size: 1rem;
+    }
+    footer {
+      background: #212529;
+      color: white;
+      padding: 20px 0;
+    }
+    .contact-info {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .contact-info p {
+      margin: 5px 0;
+    }
+
+    .contact-info strong {
+      color: #333;
+    }
+    .search-bar {
+    border-radius: 25px; /* Bordures arrondies */
+    padding: 12px 20px; /* Espacement interne */
+    font-size: 1rem; /* Taille du texte */
+    background-color: #f8f9fa; /* Couleur de fond claire */
+    border: 2px solid #007bff; /* Bordure bleue */
+    transition: all 0.3s ease; /* Transition fluide */
+  }
+
+  .search-bar:focus {
+    border-color: #0d6efd; /* Bordure bleue lors du focus */
+    box-shadow: 0 0 5px rgba(13, 110, 253, 0.5); /* Effet d'ombre sur focus */
+    outline: none; /* Retirer l'outline par défaut */
+  }
+
+  .search-bar::placeholder {
+    color: #6c757d; /* Couleur grise pour le texte du placeholder */
+    font-style: italic; /* Italique pour le placeholder */
+  }
+
+  .search-bar:hover {
+    border-color: #0056b3; /* Changer la couleur de la bordure au survol */
+  }
+    .rounded-image {
+    border-radius: 15px; /* Bordures arrondies pour l'image */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ombre douce pour l'image */
+    transition: all 0.3s ease; /* Transition fluide lors de l'effet hover */
+    object-fit: cover; /* Assurer que l'image couvre tout l'espace sans déformer */
+  }
+
+  .rounded-image:hover {
+    transform: scale(1.05); /* Effet de zoom léger au survol */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Ombre plus marquée au survol */
+  }
+
+
+  </style>
 </head>
 <body>
- <nav class="navbar navbar-light bg-light">
-     <div class="container-fluid">
-       <form class="d-flex">
-         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-         <button class="btn btn-outline-success" type="submit">Search</button>
-       </form>
-     </div>
- </nav>
-   <div class="d-flex justify-content-end mb-3">
-      <a href="/inscription" class="btn btn-primary">
-        <i class="fa fa-plus"></i> log in
-      </a>
-   </div>
-   <!-- Section des Prestataires -->
-    <div class="container my-4" >
-        <h2 class="text-center mb-4">Liste des Prestataires</h2>
-        <div class="row">
-            <!-- Boucle pour afficher les prestataires -->
-            {% for prestataire in prestataire %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-
-                        <div class="card-body">
-
-
-                            <img src="{{ prestataire[10] }}" class="card-img-top" alt="profile">
-                            <h5 class="card-title">nom: {{ prestataire[1] }}</h5>
-                            <p class="card-text">prenom:{{ prestataire[2] }}</p>
-                            <p class="card-text">Téléphone : {{ prestataire[3] }}</p>
-                            <p class="card-text">emploi : {{ prestataire[9]   }}</p>
-                            <p class="card-text">commune : {{ prestataire[6]   }}</p>
-                            <p class="card-text">email : {{ prestataire[4]   }}</p>
-                            <p class="card-text">statut : {{ prestataire[5]   }}</p>
-                            <p class="card-text">genre : {{ prestataire[7]   }}</p>
-                            <p class="card-text">langue : {{ prestataire[8]   }}</p>
-
-
-
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+  <nav class="navbar navbar-expand-lg">
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="Recherche...">
     </div>
+    <div class="container">
+      <a class="navbar-brand" href="#">Service à Domicile</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <!-- JavaScript de Bootstrap -->
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="#prestataires">Prestataires</a></li>
+
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="header">
+    <div class="header-content">
+      <h1 data-aos="fade-down">Bienvenue sur Service à Domicile</h1>
+      <p data-aos="fade-up">Des experts à votre service pour chaque besoin quotidien.</p>
+      <button class="btn btn-outline-light mt-3" data-bs-toggle="modal" data-bs-target="#adminLoginModal" data-aos="zoom-in">Se connecter</button>
+    </div>
+  </header>
+
+   <!-- Modal Connexion -->
+  <div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="adminLoginModalLabel">Connexion </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{{ url_for('admin_login') }}">
+            <div class="mb-3">
+              <label for="username" class="form-label">Nom d'utilisateur</label>
+              <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Mot de passe</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <section id="services" class="container">
+    <h2 class="section-title" data-aos="fade-right"> Services</h2>
+    <div class="row text-center">
+      <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="category-tile">
+          <i class="fas fa-broom"></i>
+          <h5>Ménage</h5>
+          <p>Professionnels du nettoyage pour un espace propre et sain.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="category-tile">
+          <i class="fas fa-baby"></i>
+          <h5>Garde d'enfants</h5>
+          <p>Des prestataires formés pour prendre soin de vos enfants.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="category-tile">
+          <i class="fas fa-tools"></i>
+          <h5>Bricolage</h5>
+          <p>Interventions rapides et efficaces pour vos petits travaux.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prestataires" class="container">
+    <h2 class="section-title" data-aos="fade-left"> Prestataires de service</h2>
+
+
+    <div class="row">
+      {% for prestataire in prestataire %}
+       {% if prestataire[5] == 'active' %}
+      <div class="col-md-4 mb-4" data-aos="fade-up">
+        <div class="card prestataire-card">
+          <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="rounded-circle mx-auto d-block" style="width:250px; height: 250px; object-fit: cover; object-position: top;" alt="Photo du prestataire">
+
+          <div class="card-body">
+            <h5 class="card-title">{{ prestataire[1] }} {{ prestataire[2] }}</h5>
+            <p class="card-text emploi">Catégorie : {{ prestataire[9] }}</p>
+            <p class="card-text commune">Commune : {{ prestataire[6] }}</p>
+            <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modal{{ prestataire[0] }}">Voir plus</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="modal{{ prestataire[0] }}" tabindex="-1" aria-labelledby="modalLabel{{ prestataire[0] }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel{{ prestataire[0] }}">Détails du prestataire</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              <img src="{{ prestataire[10] if prestataire[10] else 'static/uploads/default.jpg' }}" class="img-fluid rounded mb-3" alt="">
+
+              <ul>
+                <li><strong>Nom :</strong> {{ prestataire[1] }}</li>
+                <li><strong>Prénom :</strong> {{ prestataire[2] }}</li>
+                <li><strong>Téléphone :</strong> {{ prestataire[3] }}</li>
+                <li><strong>Email :</strong> {{ prestataire[4] }}</li>
+                <li><strong>Commune :</strong> {{ prestataire[6] }}</li>
+                <li><strong>Genre :</strong> {{ prestataire[7] }}</li>
+                <li><strong>Langue :</strong> {{ prestataire[8] }}</li>
+                <li><strong>Catégorie :</strong> {{ prestataire[9] }}</li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+       {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+
+
+  <section id="contact" class="container my-5">
+    <h2 class="section-title" data-aos="fade-up">Contact</h2>
+    <form action="/send_message" method="POST">
+    <div class="mb-3">
+        <label for="name" class="form-label">name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">E-mail</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+    <!-- Message avec coordonnées -->
+   <div class="contact-info" style="margin-top: 20px; font-size: 16px; color: #555;">
+     <p>Pour toute question, vous pouvez nous contacter à :</p>
+     <p><strong>Email :</strong> ffkll@gmail.com</p>
+     <p><strong>Téléphone :</strong> +222 46 87 58 66</p>
+   </div>
+  </section>
+
+
+  <footer class="text-center">
+    <p class="mb-0">&copy; 2025 Service à Domicile. Tous droits réservés.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keyup', () => {
+      const filter = searchInput.value.toLowerCase();
+      const cards = document.querySelectorAll('.prestataire-card');
+
+      cards.forEach(card => {
+        const nom = card.querySelector('.card-title').textContent.toLowerCase();
+        const catégorie = card.querySelector('.emploi')?.textContent.toLowerCase() || '';
+        const commune = card.querySelector('.commune')?.textContent.toLowerCase() || '';
+
+        if (nom.includes(filter) || catégorie.includes(filter) || commune.includes(filter)) {
+          card.closest('.col-md-4').style.display = '';
+        } else {
+          card.closest('.col-md-4').style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
 
 </body>
 </html>

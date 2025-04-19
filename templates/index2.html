@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>service à domicile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
+ <style>
+     p {
+            font-size: 1.2rem; /* taille de police plus grande pour les paragraphes */
+    }
+ </style>
+
+</head>
+<body>
+
+<div class="container"><br ><br ><br >
+
+    <h2 style="text-align:center;color:#18097e" ><u> {{ prestataire[2]}} {{ prestataire[1]  }}</u></h2>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+          <div class="card shadow text center" style="width:80%; ">
+            <div class="card-body">
+
+              <img src="{{ url_for('static', filename=prestataire[10].split('static/')[-1]) }}" class="img-fluid" alt="photo du prestataire">
+              <p><strong>Nom :</strong> {{ prestataire[1]  }}</p>
+              <p><strong>Prenom :</strong> {{ prestataire[2]  }}</p>
+              <p><strong>Téléphone :</strong> {{ prestataire[3]  }}</p>
+              <p><strong>Email :</strong> {{ prestataire[4] }}</p>
+              <p><strong>Status :</strong> {{ prestataire[5]  }}</p>
+              <p><strong>commune :</strong> {{ prestataire[6]  }}</p>
+              <p><strong>Genre :</strong> {{ prestataire[7] }}</p>
+              <p><strong>Langue :</strong> {{ prestataire[8]  }}</p>
+              <p><strong>Catégorie :</strong> {{ prestataire[11]  }}</p>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

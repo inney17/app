@@ -5,6 +5,8 @@ from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -18,6 +20,7 @@ class Message(db.Model):
 
 app = Flask(__name__)
 
+app.secret_key = '07_17_53'
 # Configuration de la base de données
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -40,9 +43,6 @@ def allowed_file(filename):
 # Route : Page d'accueil
 @app.route('/')
 def index():
-    if 'admin' not in session:
-        return redirect(url_for('login'))  # ou une autre route pour l'admin
-
 
     cur = mysql.connection.cursor()
 
@@ -98,12 +98,14 @@ def inscription():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             image_path = f"{UPLOAD_FOLDER}/{filename}"
 
+
+        hashed_password = generate_password_hash(password)
         # Insertion dans la base de données
         cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO prestataire (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, id_service, password)
+            INSERT INTO prestataire (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, id_service, hashed_password )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id, password))
+        """, (nom, prenom, téléphone, image_path, email, statut, commune, genre, langue, service_id, hashed_password ))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('index'))  # Rediriger après l'inscription
@@ -126,17 +128,28 @@ def delete(id):
     return redirect(url_for('index'))
 
 
+
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
-    # Connexion à la base de données pour récupérer les informations de l'utilisateur
+    # Récupérer les services disponibles pour l'affichage dans le select
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM prestataire,service  WHERE id = %s", (id,))
+    cur.execute("SELECT * FROM service")
+    services = cur.fetchall()
+    cur.close()
+
+    # Récupérer les infos du prestataire à modifier
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT prestataire.*, service.catégorie 
+        FROM prestataire 
+        JOIN service ON prestataire.id_service = service.id_service
+        WHERE prestataire.id = %s
+    """, (id,))
     prestataire = cur.fetchone()
     cur.close()
 
-    # Si la méthode est POST, on met à jour les informations de l'utilisateur
     if request.method == 'POST':
-        # Récupérer les nouvelles informations du formulaire
+        # Récupérer les données du formulaire
         nom = request.form.get('nom')
         prenom = request.form.get('prenom')
         email = request.form.get('email')
@@ -145,38 +158,39 @@ def update(id):
         commune = request.form.get('commune')
         genre = request.form.get('genre')
         langue = request.form.get('langue')
-        catégorie = request.form.get('catégorie')
-        password = request.form.get('password')
-        file = request.files['image']
+        service_id = request.form.get('id_service')
+        password = request.form.get('password')  # Mot de passe optionnel
+        image_path = prestataire[10]  # Chemin actuel de l’image
 
-        image_path = prestataire[10]  # Garder l'ancienne image par défaut
-
-        # Vérifier si un fichier d'image est téléchargé
+        # Vérifier si une nouvelle image est envoyée
         if 'image' in request.files:
             file = request.files['image']
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                image_path = f"{app.config['UPLOAD_FOLDER']}/{filename}"  # Nouvelle image
+                image_path = f"{app.config['UPLOAD_FOLDER']}/{filename}"
 
-        # Connexion à la base de données pour mettre à jour les informations
+        # Hash du mot de passe uniquement si un nouveau est fourni
+        if password:
+            hashed_password = generate_password_hash(password)
+        else:
+            hashed_password = prestataire[11]  # Mot de passe actuel
+
+        # Mise à jour des données en base
         cur = mysql.connection.cursor()
         cur.execute("""
-                     UPDATE prestataire 
-                     SET nom = %s, prenom = %s, email = %s, téléphone = %s, statut = %s, 
-                         commune = %s, genre = %s, langue = %s, catégorie = %s, password = %s, image_path = %s
-
-                     WHERE id = %s
-                 """, (nom, prenom, email, téléphone, statut, commune, genre, langue, catégorie, password, image_path, id))
-
+            UPDATE prestataire 
+            SET nom = %s, prenom = %s, email = %s, image_path = %s, téléphone = %s,
+                statut = %s, commune = %s, genre = %s, langue = %s, id_service = %s, hashed_password = %s
+            WHERE id = %s
+        """, (
+        nom, prenom, email, image_path, téléphone, statut, commune, genre, langue, service_id, hashed_password, id))
         mysql.connection.commit()
         cur.close()
-        # Rediriger l'utilisateur vers la page d'accueil ou vers un message de succès
-        return redirect(url_for('index'))  # Vous pouvez rediriger vers la page de votre choix
 
-        # Si la méthode est GET, on affiche le formulaire avec les informations actuelles de l'utilisateur
-    return render_template('update.html', prestataire=prestataire)
+        return redirect(url_for('index'))
 
+    return render_template('update.html', prestataire=prestataire, services=services)
 @app.route('/statistics')
 def statistics():
     cur = mysql.connection.cursor()
@@ -192,7 +206,7 @@ def statistics():
     inactive_prestataire = cur.fetchone()[0]
 
     # Si tu veux ajouter d'autres statistiques ou graphiques
-    cur.execute("SELECT COUNT(DISTINCT catégorie) FROM prestataire")
+    cur.execute("SELECT COUNT(*) FROM service")
     total_catégorie = cur.fetchone()[0]
 
 
@@ -286,7 +300,7 @@ def messages():
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('admin', None)  # Supprimer la session de l'admin
-    return redirect(url_for('admin_logout'))
+    return redirect(url_for('index'))
 
 @app.route('/paiement', methods=['GET', 'POST'])
 def paiement():
@@ -298,7 +312,16 @@ def paiement():
     prestataires = cursor.fetchall()
 
     if request.method == 'POST':
-        prestataire_id = request.form['prestataire_id']
+        téléphone = request.form['téléphone']
+
+        # Récupérer l'ID du prestataire à partir du téléphone
+        cursor.execute("SELECT ID FROM prestataire WHERE téléphone = %s", (téléphone,))
+        result = cursor.fetchone()
+        if not result:
+            flash("Téléphone non reconnu", "danger")
+            return redirect(url_for('paiement'))
+        prestataire_id = result[0]
+
         montant = request.form['montant']
         date_paiement = datetime.now().strftime('%Y-%m-%d')
         date_expiration = (datetime.now().replace(month=datetime.now().month + 1)).strftime('%Y-%m-%d')
@@ -332,6 +355,25 @@ def paiement():
     cursor.close()
 
     return render_template('paiement.html', prestataires=prestataires, paiements=paiements)
+
+# routes.py ou dans ton app principale
+@app.route("/dashboard_service")
+def dashboard_service():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id_service, catégorie FROM service")
+    services = cur.fetchall()
+    cur.close()
+    return render_template("dashboard_service.html", services=services)
+
+@app.route("/ajouter_service", methods=["POST"])
+def ajouter_service():
+    if request.method == "POST":
+        categorie = request.form["categorie"]
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO service (catégorie) VALUES (%s)", (categorie,))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for("dashboard_service"))
 
 
 

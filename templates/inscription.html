@@ -8,16 +8,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome (optionnel pour les icônes) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body>
+
+  <!-- En-tête avec couleur de fond -->
+
     <div class="container my-5">
         <h1 class="text-center mb-4">s'inscrire</h1>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <form method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
                     <div class="mb-3">
-                        <label for="Nom" class="form-label">Nom :</label>
-                        <input type="text" id="Nom" name="Nom" class="form-control" required placeholder="Entrez votre nom ">
+                        <label for="nom" class="form-label">Nom :</label>
+                        <input type="text" id="nom" name="nom" class="form-control" required placeholder="Entrez votre nom ">
                     </div>
                     <div class="mb-3">
                         <label for="prenom" class="form-label">prenom :</label>
@@ -37,10 +41,8 @@
 
                      <div class="mb-3">
                         <label for="statut" class="form-label">statut:</label>
-                        <select id="statut" name="statut" class="form-select" required>
-                            <option value="active">active</option>
-                            <option value="inactive">inactive</option>
-                        </select>
+                        <input type="text" id="statut" name="statut" class="form-control" value="inactive" required>
+
                     </div>
 
                      <div class="mb-3">
@@ -60,15 +62,26 @@
                         <label for="langue" class="form-label">Langue:</label>
                         <input type="text" id="langue" name="langue" class="form-control" rows="4" placeholder="Entrez votre langue">
                     </div>
+                    <div class="mb-3">
+                       <label for="password" class="form-label">Mot de passe :</label>
+                       <input type="password" id="password" name="password" class="form-control" required placeholder="Entrez un mot de passe">
+                    </div>
+
 
                     <div class="mb-3">
-                        <label for="emploi" class="form-label">emploi:</label>
-                        <input type="text" id="emploi" name="emploi" class="form-control" rows="4" placeholder="Entrez votre catégorie de service">
+                            <label for="id_service" class="form-label">Catégorie:</label>
+                            <select id="id_service" name="id_service" class="form-select" required>
+                                    <option value="">-- Sélectionnez une catégorie --</option>
+                                    {% for service in service %}
+                                        <option value="{{ service[0] }}">{{ service[1] }}</option>
+                                    {% endfor %}
+                            </select>
                     </div>
+
 
                     <div class="mb-3">
                         <label for="image" class="form-label">Image :</label>
-                        <input type="file" id="image" name="image" class="form-control">
+                        <input type="file" id="image" name="image" class="form-control"  required >
                     </div>
 
 
