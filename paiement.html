@@ -53,6 +53,14 @@
     .main-content {
       padding: 20px;
     }
+        /* Animation des icônes */
+    .sidebar a:hover i {
+      animation: bounce 0.5s;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
+    }
   </style>
 </head>
 
@@ -60,22 +68,21 @@
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
-      <nav class="col-md-2 sidebar">
-        <h4 class="px-3">Admin</h4>
-        <a href="/admin_dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-        <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
-        <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
-        <a href="{{ url_for('paiement') }} "
-           class="{% if request.path == url_for('paiement') %}active{% endif %}">
-           <i class="fas fa-credit-card me-2"></i> Paiement
-        </a>
-        <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
-        <div class="logout-btn">
-          <a href="{{ url_for('admin_logout') }}" class="btn btn-danger w-75">
+
+ <nav class="col-md-2 sidebar d-flex flex-column align-items-start">
+  <h4>Admin</h4>
+  <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
+  <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
+  <a href="{{ url_for('dashboard_service') }}"><i class="fas fa-cogs me-2"></i> Services</a>
+   <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
+  <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
+   <a href="{{ url_for('messages') }}"><i class="fas fa-envelope"></i> Message</a>
+     <div class="logout-btn">
+          <a href="{{ url_for('admin_logout') }}">
             <i class="fas fa-sign-out-alt"></i> Déconnexion
           </a>
-        </div>
-      </nav>
+     </div>
+ </nav>
 
       <!-- Main Content -->
       <main class="col-md-10 main-content">
@@ -90,14 +97,15 @@
             <form method="POST" action="{{ url_for('paiement') }}">
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label for="prestataire_id" class="form-label">Prestataire</label>
-                  <select class="form-select" id="prestataire_id" name="prestataire_id" required>
-                    <option value="" selected disabled>Sélectionner un prestataire</option>
+                  <label for="téléphone" class="form-label">Téléphone  </label>
+                  <input class="form-control" list="telephones" name="téléphone" id="téléphone" placeholder="Entrez un numéro..." required>
+                  <datalist id="telephones">
                     {% for p in prestataires %}
-                    <option value="{{ p[0] }}">{{ p[1] }} {{ p[2] }}</option>
+                      <option value="{{ p[3] }}">  <!-- p[1] = numéro de téléphone -->
                     {% endfor %}
-                  </select>
+                  </datalist>
                 </div>
+
                 <div class="col-md-6">
                   <label for="montant" class="form-label">Montant (MRO)</label>
                   <input type="number" class="form-control" id="montant" name="montant" min="1" required>
@@ -171,5 +179,17 @@
       });
     });
   </script>
+  <!-- Affichage des messages flash -->
+<!-- Affichage des messages flash -->
+ {% with messages = get_flashed_messages() %}
+   {% if messages %}
+     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+       <strong>Erreur : </strong> {{ messages[0] }}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+   {% endif %}
+ {% endwith %}
+
+
 </body>
 </html>

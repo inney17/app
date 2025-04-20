@@ -81,14 +81,15 @@
   <h4>Admin</h4>
   <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
   <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
-  <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
+  <a href="{{ url_for('dashboard_service') }}"><i class="fas fa-cogs me-2"></i> Services</a>
+     <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
   <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
   <a href="{{ url_for('messages') }}"><i class="fas fa-envelope"></i> Message</a>
    <div class="logout-btn">
           <a href="{{ url_for('admin_logout') }}">
             <i class="fas fa-sign-out-alt"></i> Déconnexion
           </a>
-        </div>
+   </div>
  </nav>
         <!-- Messages des utilisateurs -->
   <main class="col-md-10 p-4">
@@ -116,6 +117,6 @@
 
 
   </main>
-
-  </body>
+ </div>
+ </body>
 </html>

@@ -92,6 +92,7 @@ def inscription():
         genre = request.form.get('genre')
         langue = request.form.get('langue')
         service_id = request.form.get('id_service')
+        prix = request.form.get('prix')
         password = request.form.get('password')
 
         if not password:
@@ -121,13 +122,13 @@ def inscription():
         cur.execute("""
             INSERT INTO prestataire (
                 nom, prenom, téléphone, image_path, email, statut, commune,
-                genre, langue, id_service, hashed_password,
+                genre, langue, id_service,prix, hashed_password,
                 carte_identité, casier_judiciaire, papier_séjour
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             nom, prenom, téléphone, image_path, email, statut, commune,
-            genre, langue, service_id, hashed_password,
+            genre, langue, service_id,prix, hashed_password,
             carte_identite_path, casier_judiciaire_path, papier_sejour_path
         ))
         mysql.connection.commit()
