@@ -104,13 +104,15 @@
   <h4>Admin</h4>
   <a href="/"><i class="fas fa-home me-2"></i> Accueil</a>
   <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-briefcase me-2"></i> Prestataires</a>
-  <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
+   <a href="{{ url_for('dashboard_service') }}"><i class="fas fa-cogs me-2"></i> Services</a>
+   <a href="{{ url_for('paiement') }}"><i class="fas fa-credit-card me-2"></i> Paiement</a>  <!-- Lien vers Paiement -->
   <a href="{{ url_for('statistics') }}"><i class="fas fa-chart-line me-2"></i> Statistiques</a>
-  <div class="logout-btn">
+  <a href="{{ url_for('messages') }}"><i class="fas fa-envelope"></i> Message</a>
+   <div class="logout-btn">
           <a href="{{ url_for('admin_logout') }}">
             <i class="fas fa-sign-out-alt"></i> Déconnexion
           </a>
-        </div>
+   </div>
  </nav>
 
 
@@ -163,13 +165,17 @@
                   <th>Commune</th>
                   <th>Genre</th>
                   <th>Langue</th>
+                  <th>prix</th>
                   <th>Catégorie</th>
                   <th>Profil</th>
+                  <th>Carte d'identité</th>
+                  <th>Casier judiciaire</th>
+                  <th>Papier séjour</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {% for prestataire in prestataire %}
+                {% for prestataire in prestataires %}
                 <tr data-status="{{ prestataire[5] }}">
                   <td>{{ prestataire[0] }}</td>
                   <td>{{ prestataire[1] }}</td>
@@ -183,10 +189,88 @@
                   <td>{{ prestataire[6] }}</td>
                   <td>{{ prestataire[7] }}</td>
                   <td>{{ prestataire[8] }}</td>
-                  <td>{{ prestataire[11] }}</td>
+                  <td>{{ prestataire[12] }}</td> <!-- prix -->
+                  <td>{{ prestataire[16] }}</td> <!-- catégorie (depuis table service) -->
+
                   <td>
                     <img src="{{ url_for('static', filename=prestataire[10].replace('static/', '')) }}" alt="Profil">
                   </td>
+
+                  <td>
+  {% if prestataire[13] %}
+    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCI{{ prestataire[0] }}">
+      <i class="fa fa-eye"></i> fichier
+    </button>
+
+    <!-- Modal Carte Identité -->
+    <div class="modal fade" id="modalCI{{ prestataire[0] }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Carte d'identité</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <iframe src="{{ url_for('static', filename=prestataire[13].replace('static/', '')) }}" width="100%" height="500px"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <span class="text-muted">Aucun</span>
+  {% endif %}
+</td>
+
+<td>
+  {% if prestataire[14] %}
+    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCasier{{ prestataire[0] }}">
+      <i class="fa fa-eye"></i> fichier
+    </button>
+
+    <!-- Modal Casier judiciaire -->
+    <div class="modal fade" id="modalCasier{{ prestataire[0] }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Casier judiciaire</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <iframe src="{{ url_for('static', filename=prestataire[14].replace('static/', '')) }}" width="100%" height="500px"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <span class="text-muted">Aucun</span>
+  {% endif %}
+</td>
+
+<td>
+  {% if prestataire[15] %}
+    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSejour{{ prestataire[0] }}">
+      <i class="fa fa-eye"></i> fichier
+    </button>
+
+    <!-- Modal Papier de séjour -->
+    <div class="modal fade" id="modalSejour{{ prestataire[0] }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Papier de séjour</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <iframe src="{{ url_for('static', filename=prestataire[15].replace('static/', '')) }}" width="100%" height="500px"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <span class="text-muted">Aucun</span>
+  {% endif %}
+</td>
+
                   <td class="text-center">
                     <a href="/update/{{ prestataire[0] }}" class="btn btn-warning btn-sm me-1" title="Modifier">
                       <i class="fa fa-edit"></i>

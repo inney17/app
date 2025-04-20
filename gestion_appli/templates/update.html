@@ -1,90 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>service à domicile</title>
-    <!-- Bootstrap CSS -->
+    <title>Modifier Prestataire</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome (optionnel pour les icônes) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+<style>
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 500;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+
+        .btn-primary {
+            width: 100%;
+            font-weight: bold;
+        }
+
+        img {
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        span {
+            display: block;
+            margin-top: 5px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+</style>
 </head>
 <body>
-    <div class="container my-5">
-        <h1 class="text-center mb-4">Gérer mon compte</h1>
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
-                    <div class="mb-3">
-                        <label for="nom" class="form-label">Nom :</label>
-                        <input type="text" id="nom" name="nom" class="form-control" value="{{ prestataire[1] }}" required placeholder="Entrez votre nom">
-                    </div>
-                    <div class="mb-3">
-                        <label for="prenom" class="form-label">Preom :</label>
-                        <input type="text" id="prenom" name="prenom" class="form-control" value="{{ prestataire[2] }}" required placeholder="Entrez votre Prenom">
-                    </div>
-                    <div class="mb-3">
-                        <label for="téléphone" class="form-label">téléphone :</label>
-                        <input type="number" id="téléphone" name="téléphone" class="form-control" rows="4" value="{{ prestataire[3] }}" placeholder="Entrez votre numéro">
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label">email:</label>
-                        <input type="text" id="email" name="email" class="form-control" rows="4" value="{{ prestataire[4] }}" placeholder="Entrez votre email">
-                    </div>
+<div class="container my-5">
+    <h1 class="text-center mb-4">Modifier Prestataire</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="POST" enctype="multipart/form-data" class="p-4  border rounded shadow-sm" >
+                <div class="form-group">
+                    <label for="Nom">Nom</label>
+                    <input type="text" id="Nom" name="Nom" value="{{ prestataire['Nom'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" value="{{ prestataire['Prenom'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="téléphone">Téléphone</label>
+                    <input type="text" id="téléphone" name="téléphone" value="{{ prestataire['Téléphone'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ prestataire['Email'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="statut">Statut</label>
+                    <input type="text" id="statut" name="statut" value="{{ prestataire['statut'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="commune">Commune</label>
+                    <input type="text" id="commune" name="commune" value="{{ prestataire['commune'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <input type="text" id="genre" name="genre" value="{{ prestataire['genre'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="langue">Langue</label>
+                    <input type="text" id="langue" name="langue" value="{{ prestataire['Langue'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="prix">Prix</label>
+                    <input type="text" id="prix" name="prix" value="{{ prestataire['prix'] }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="service_id">Service</label>
+                    <select id="service_id" name="service_id" class="form-control">
+                        {% for service in services %}
+                            <option value="{{ service['id'] }}" {% if prestataire['service_id'] == service['id'] %}selected{% endif %}>{{ service['catégorie'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
+                <!-- Champs pour les fichiers -->
+                <div class="form-group">
+                    <label for="image">Image de profil</label>
+                    <input type="file" id="image" name="image" class="form-control">
+                    {% if prestataire['image_path'] %}
+                        <img src="{{ url_for('static', filename='uploads/' + prestataire['image_path']) }}" alt="Image actuelle" width="100">
+                    {% endif %}
+                </div>
 
+                <div class="form-group">
+                    <label for="carte_identite">Carte d'identité</label>
+                    <input type="file" id="carte_identite" name="carte_identite" class="form-control">
+                    {% if prestataire['carte_identite'] %}
+                        <span>Fichier sélectionné: {{ prestataire['carte_identite'] }}</span>
+                    {% endif %}
+                </div>
 
+                <div class="form-group">
+                    <label for="casier_judiciaire">Casier judiciaire</label>
+                    <input type="file" id="casier_judiciaire" name="casier_judiciaire" class="form-control">
+                    {% if prestataire['casier_judiciaire'] %}
+                        <span>Fichier sélectionné: {{ prestataire['casier_judiciaire'] }}</span>
+                    {% endif %}
+                </div>
 
-                     <div class="mb-3">
-                        <label for="statut" class="form-label">statut:</label>
-                        <select id="statut" name="statut" class="form-select" value="{{ prestataire[5] }}" required>
-                            <option value="active">active</option>
-                            <option value="inactive">inactive</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="papier_sejour">Papier de séjour</label>
+                    <input type="file" id="papier_sejour" name="papier_sejour" class="form-control">
+                    {% if prestataire['papier_sejour'] %}
+                        <span>Fichier sélectionné: {{ prestataire['papier_sejour'] }}</span>
+                    {% endif %}
+                </div>
 
-                     <div class="mb-3">
-                        <label for="commune" class="form-label">commune:</label>
-                        <input type="text" id="commune" name="commune" class="form-control" rows="4" value="{{ prestataire[6] }}" placeholder="Entrez votre commune">
-                    </div>
-
-                     <div class="mb-3">
-                        <label for="genre" class="form-label">genre:</label>
-                        <select id="genre" name="genre" class="form-select" value="{{ prestataire[7] }}" required>
-                            <option value="Homme">Homme</option>
-                            <option value="Femme">Femme</option>
-                        </select>
-                    </div>
-
-                     <div class="mb-3">
-                        <label for="langue" class="form-label">Langue:</label>
-                        <input type="text" id="langue" name="langue" class="form-control" rows="4" value="{{ prestataire[8] }}" placeholder="Entrez votre langue">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="catégorie" class="form-label">catégorie:</label>
-                        <input type="text" id="catégorie" name="catégorie" class="form-control" rows="4" value="{{ prestataire[11] }}" placeholder="Entrez votre catégorie de service">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">profile :</label><br>
-                        <img src="{{ url_for('static', filename=prestataire[10].replace('static/', '')) }}" alt="Image de {{ prestataire[10] }}" class="img-fluid mb-3" style="max-width: 100%; max-height: 200px;">
-                    </div>
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Changer de profile :</label>
-                        <input type="file" id="image" name="image" class="form-control">
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fa fa-save"></i> Modifier
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </form>
         </div>
     </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

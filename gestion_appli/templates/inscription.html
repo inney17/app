@@ -3,94 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>service à domicile</title>
-    <!-- Bootstrap CSS -->
+    <title>{{ 'Inscription' }} Prestataire</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome (optionnel pour les icônes) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
 <body>
 
-  <!-- En-tête avec couleur de fond -->
+<div class="container my-5">
+    <h1 class="text-center mb-4">{{ 'Modifier' if prestataire else 'Inscription' }} Prestataire</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
 
-    <div class="container my-5">
-        <h1 class="text-center mb-4">s'inscrire</h1>
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
-                    <div class="mb-3">
-                        <label for="Nom" class="form-label">Nom :</label>
-                        <input type="text" id="Nom" name="Nom" class="form-control" required placeholder="Entrez votre nom ">
-                    </div>
-                    <div class="mb-3">
-                        <label for="prenom" class="form-label">prenom :</label>
-                        <input id="prenom" type="text" name="prenom" class="form-control" rows="4" placeholder="Entrez votre prenom">
-                    </div>
+                <div class="mb-3">
+                    <label for="nom" class="form-label">Nom :</label>
+                    <input type="text" id="nom" name="Nom" class="form-control" required value="{{ prestataire.nom if prestataire else '' }}">
+                </div>
 
-                    <div class="mb-3">
-                        <label for="téléphone" class="form-label">téléphone :</label>
-                        <input type="number" id="téléphone" name="téléphone" class="form-control" rows="4" placeholder="Entrez votre numéro">
-                    </div>
+                <div class="mb-3">
+                    <label for="prenom" class="form-label">Prénom :</label>
+                    <input type="text" id="prenom" name="prenom" class="form-control" value="{{ prestataire.prenom if prestataire else '' }}">
+                </div>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label">email:</label>
-                        <input type="text" id="email" name="email" class="form-control" rows="4" placeholder="Entrez votre email">
-                    </div>
+                <div class="mb-3">
+                    <label for="téléphone" class="form-label">Téléphone :</label>
+                    <input type="tel" id="téléphone" name="téléphone" class="form-control" value="{{ prestataire.téléphone if prestataire else '' }}">
+                </div>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Mot de passe:</label>
-                        <input type="text" id="password" name="password" class="form-control" rows="4" placeholder="Entrez votre mot de passe" required>
-                    </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email :</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ prestataire.email if prestataire else '' }}">
+                </div>
 
+                <div class="mb-3">
+                    <label for="statut" class="form-label">Statut :</label>
+                    <input type="text" id="statut" name="statut" class="form-control" required value="{{ prestataire.statut if prestataire else '' }}">
+                </div>
 
-                     <div class="mb-3">
-                        <label for="statut" class="form-label">statut:</label>
-                        <select id="statut" name="statut" class="form-select" required>
+                <div class="mb-3">
+                    <label for="commune" class="form-label">Commune :</label>
+                    <input type="text" id="commune" name="commune" class="form-control" value="{{ prestataire.commune if prestataire else '' }}">
+                </div>
 
-                            <option value="inactive">inactive</option>
-                        </select>
-                    </div>
+                <div class="mb-3">
+                    <label for="genre" class="form-label">Genre :</label>
+                    <select id="genre" name="genre" class="form-select" required>
+                        <option value="Homme" {% if prestataire and prestataire.genre == 'Homme' %}selected{% endif %}>Homme</option>
+                        <option value="Femme" {% if prestataire and prestataire.genre == 'Femme' %}selected{% endif %}>Femme</option>
+                    </select>
+                </div>
 
-                     <div class="mb-3">
-                        <label for="commune" class="form-label">commune:</label>
-                        <input type="text" id="commune" name="commune" class="form-control" rows="4" placeholder="Entrez votre commune">
-                    </div>
+                <div class="mb-3">
+                    <label for="langue" class="form-label">Langue :</label>
+                    <input type="text" id="langue" name="langue" class="form-control" value="{{ prestataire.langue if prestataire else '' }}">
+                </div>
 
-                     <div class="mb-3">
-                        <label for="genre" class="form-label">genre:</label>
-                        <select id="genre" name="genre" class="form-select" required>
-                            <option value="Homme">Homme</option>
-                            <option value="Femme">Femme</option>
-                        </select>
-                    </div>
+                {% if not prestataire %}
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mot de passe :</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Entrez un mot de passe">
+                </div>
+                {% endif %}
 
-                     <div class="mb-3">
-                        <label for="langue" class="form-label">Langue:</label>
-                        <input type="text" id="langue" name="langue" class="form-control" rows="4" placeholder="Entrez votre langue">
-                    </div>
+                <div class="mb-3">
+                    <label for="prix" class="form-label">Prix :</label>
+                    <input type="number" id="prix" name="prix" class="form-control" required value="{{ prestataire.prix if prestataire else '' }}">
+                </div>
 
-                    <div class="mb-3">
-                        <label for="catégorie" class="form-label">Catégorie:</label>
-                        <input type="text" id="catégorie" name="catégorie" class="form-control" rows="4" placeholder="Entrez votre catégorie de service">
-                    </div>
+                <div class="mb-3">
+                    <label for="service_id" class="form-label">Catégorie :</label>
+                    <select id="service_id" name="service_id" class="form-select" required>
+                        <option value="">-- Sélectionnez une catégorie --</option>
+                        {% for service in services %}
+                            <option value="{{ service[0] }}"
+                                {% if prestataire and prestataire.service_id == service[0] %}selected{% endif %}>
+                                {{ service[1] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Image :</label>
-                        <input type="file" id="image" name="image" class="form-control"  required >
-                    </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image :</label>
+                    <input type="file" id="image" name="image" class="form-control">
+                    {% if prestataire and prestataire.image_path %}
+                        <img src="{{ url_for('static', filename=prestataire.image_path.split('static/')[-1]) }}" class="img-thumbnail mt-2" width="150">
+                    {% endif %}
+                </div>
 
+                <div class="mb-3">
+                    <label for="carte_identite" class="form-label">Carte d'identité :</label>
+                    <input type="file" id="carte_identite" name="carte_identite" class="form-control">
+                </div>
 
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-save"></i> je m'inscris
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="mb-3">
+                    <label for="casier_judiciaire" class="form-label">Casier judiciaire :</label>
+                    <input type="file" id="casier_judiciaire" name="casier_judiciaire" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="papier_sejour" class="form-label">Papier de séjour :</label>
+                    <input type="file" id="papier_sejour" name="papier_sejour" class="form-control">
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        {{ 'Mettre à jour' if prestataire else "S'inscrire" }}
+                    </button>
+                </div>
+
+            </form>
         </div>
     </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
